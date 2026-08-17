@@ -1,16 +1,11 @@
 # cavell-kit-demo
 
 The reference embedding of **`@cavell/kit`** — Cavell's embeddable AI-companion chat for React
-hosts, by [Polaris Health](https://polaris-health.ai). This app mounts the full assistant surface
+hosts, by [Cavell](https://cavell.ai). This app mounts the full assistant surface
 (`CavellProvider` + `CavellAssistant`) next to a harness panel that exercises the public API:
 `useCavellCompanion`, client-executed tools (`useFrontendTool`), human-in-the-loop tools, custom
 tool-call renderers, the conversation history list, feedback, and host context declarations
 (patient / problem in focus).
-
-> **This repository is a generated, read-only mirror.** Each branch tracks a Cavell release
-> environment — `qa`, `staging`, and `main` → production — and every release lands as one commit. Branches are generated independently and must never be merged into each
-> other; version tags (`v1.x.y`) live on `main`. Issues are welcome; pull requests cannot be
-> accepted here.
 
 ## License
 
@@ -27,6 +22,9 @@ yarn install
 yarn dev          # http://localhost:5176
 ```
 
+Icons render as empty boxes and text falls back to system fonts until you supply the peer assets
+— see below.
+
 The demo takes all configuration from URL parameters (documented at the top of `src/App.tsx`).
 You need a valid access token for the Cavell environment this branch tracks — paste it into the
 token form, or pass it directly:
@@ -38,7 +36,108 @@ http://localhost:5176/?token=<your token>&agent=careconnect_gp
 The token screen's **backend picker** (`?base=...`) selects which Cavell API origin to call;
 tokens are per environment.
 
-### Running a different kit release
+## Peer assets: icons and font
+
+The kit renders icons as FontAwesome classes (`<i class="fa-light fa-…">`) and names Inter first
+in its type stack, but it ships **neither**: FontAwesome Pro is licensed per customer and cannot
+be redistributed, so a fresh checkout shows empty boxes where icons belong. `index.html` already
+links the two paths this app expects, and `public/` starts empty:
+
+```html
+<link rel="stylesheet" href="/fonts/inter/inter.css" /> <link rel="stylesheet" href="/fa/css/all.min.css" />
+```
+
+Note that Vite's dev server answers a missing file under those paths with the app's HTML rather
+than a 404, so the browser drops the stylesheet on a MIME-type mismatch — blank icons, no red
+line in the network tab. The console message is the giveaway.
+
+### FontAwesome Pro, option 1 — your Kit URL (nothing to install)
+
+If your FontAwesome account has a Kit, hand the demo its script URL and the dev server injects it
+into the page:
+
+```bash
+VITE_FA_URL=https://kit.fontawesome.com/<your-kit-code>.js yarn dev
+```
+
+`VITE_FA_URL` also accepts a stylesheet URL: anything ending in `.js` is injected as a `<script>`,
+anything else as a `<link rel="stylesheet">`.
+
+### FontAwesome Pro, option 2 — the npm package (self-hosted, bundled)
+
+A Pro subscription includes a private npm registry token (fontawesome.com → Account → Tokens).
+Point the `@fortawesome` scope at their registry in `.yarnrc.yml`:
+
+```yaml
+npmScopes:
+    fortawesome:
+        npmRegistryServer: 'https://npm.fontawesome.com/'
+        npmAuthToken: '<your FA Pro token>'
+```
+
+Keep the token out of version control — `YARN_NPM_AUTH_TOKEN` in the environment works instead of
+the `npmAuthToken` line. Then install and import the stylesheet:
+
+```bash
+yarn add @fortawesome/fontawesome-pro
+```
+
+```ts
+// src/main.tsx
+import '@fortawesome/fontawesome-pro/css/all.min.css'
+```
+
+Vite bundles that CSS and emits the webfonts alongside it, so nothing needs to live in `public/`.
+Remove the `/fa/css/all.min.css` `<link>` from `index.html` afterwards.
+
+### FontAwesome Pro, option 3 — copy the files into `public/`
+
+From your FontAwesome account, download **Font Awesome Pro for the Web** and copy two folders in.
+They must stay siblings under `public/fa/` — `all.min.css` looks for its font files one level up,
+in a `webfonts` folder next to `css` — so the layout is the contract:
+
+```
+public/fa/css/all.min.css
+public/fa/webfonts/fa-light-300.woff2      ← the default family
+public/fa/webfonts/fa-solid-900.woff2      ← used by a few components
+public/fa/webfonts/fa-regular-400.woff2
+public/fa/webfonts/fa-brands-400.woff2     ← optional
+```
+
+These are the paths `index.html` already requests, so this route needs no code change.
+
+### Inter
+
+Inter is free (SIL Open Font License), so self-hosting it is unrestricted. Simplest route, no
+files to copy:
+
+```bash
+yarn add @fontsource/inter
+```
+
+```ts
+// src/main.tsx — then remove the /fonts/inter/inter.css link from index.html
+import '@fontsource/inter'
+```
+
+To serve it yourself instead, put the woff2 files under `public/fonts/inter/` and declare them in
+`public/fonts/inter/inter.css` under the family name **`Inter`** (the type stack is
+`'Inter UI', 'Inter', system-ui, …`):
+
+```css
+@font-face {
+	font-family: 'Inter';
+	font-style: normal;
+	font-weight: 100 900; /* one variable file covers every weight */
+	font-display: swap;
+	src: url('./InterVariable.woff2') format('woff2');
+}
+```
+
+`.gitignore` already excludes `public/fa`, `public/fonts` and `public/images`, so licensed files
+you drop there cannot be committed by accident.
+
+## Running a different kit release
 
 `yarn dev` uses the `@cavell/kit` version pinned in `package.json` — the release this branch was
 generated against. To try another one without touching your lockfile:
@@ -62,8 +161,8 @@ credentials. The three commands above are public downloads.)
 
 - `src/App.tsx` — the whole integration: provider setup, frontend tools, HITL, custom renderers,
   session list, feedback, context declarations. Written to be copied from.
-- `public/README.md` — the peer-asset contract (FontAwesome Pro, Inter, logo): the kit bundles
-  no licensed assets; the host page provides them.
+- `public/README.md` — the peer-asset contract in one page (the paths, the folder layout, what
+  happens without them).
 - `package.json` — the dependency shape a host needs: `@cavell/kit` (pinned to this branch's
   released build) plus the exact-version peers (`@copilotkit/react-core`, `@ag-ui/client`,
   `@ag-ui/core`) and `react`/`react-dom`/`zod`.

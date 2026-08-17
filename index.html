@@ -4,7 +4,10 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Cavell Kit Demo</title>
-		<!-- Peer assets per ADR 0005 D5: the host loads Inter + FontAwesome; the kit only emits classes. -->
+		<!-- Peer assets: the host page loads Inter + FontAwesome Pro; the kit only emits the classes,
+		     it bundles no licensed assets. Drop your own copies under public/ to serve these paths
+		     (see public/README.md), or point VITE_FA_URL at your FontAwesome kit or stylesheet —
+		     without either, icons render as blank boxes and the font falls back. -->
 		<link rel="stylesheet" href="/fonts/inter/inter.css" />
 		<link rel="stylesheet" href="/fa/css/all.min.css" />
 	</head>

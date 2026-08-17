@@ -1,9 +1,28 @@
 import react from '@vitejs/plugin-react'
 import path from 'node:path'
-import { defineConfig } from 'vite'
+import { type Plugin, defineConfig } from 'vite'
 
 // Peer assets (FontAwesome Pro, Inter, the logo) are served from ./public — they are YOURS to
-// provide, see public/README.md. The kit bundles no licensed assets.
+// provide, see public/README.md. The kit bundles no licensed assets: it emits `fa-light fa-…`
+// classes and expects the page to have loaded a FontAwesome that defines them.
+//
+// VITE_FA_URL is the shortcut for a license you already own — your kit script
+// (https://kit.fontawesome.com/<code>.js) or a self-hosted stylesheet — injected into index.html
+// instead of copying files into public/:
+//
+//   VITE_FA_URL=https://kit.fontawesome.com/<code>.js yarn dev:qa
+const faUrl = process.env.VITE_FA_URL
+const faAssets = (): Plugin => ({
+	name: 'cavell-demo-fontawesome',
+	transformIndexHtml: () =>
+		faUrl
+			? [
+					faUrl.endsWith('.js')
+						? { tag: 'script', attrs: { src: faUrl, crossorigin: 'anonymous' }, injectTo: 'head' as const }
+						: { tag: 'link', attrs: { rel: 'stylesheet', href: faUrl }, injectTo: 'head' as const },
+				]
+			: [],
+})
 
 // `yarn dev:remote` / `dev:qa` / `dev:staging` / `dev:prod` (scripts/use-kit.mjs) point this at a
 // released @cavell/kit build; unset — plain `yarn dev` — means the version installed in
@@ -18,7 +37,7 @@ const kitAlias = kitDir
 	: []
 
 export default defineConfig({
-	plugins: [react({ babel: { plugins: ['babel-plugin-react-compiler'] } })],
+	plugins: [react({ babel: { plugins: ['babel-plugin-react-compiler'] } }), faAssets()],
 	resolve: {
 		alias: kitAlias,
 		// The kit's peers must stay single copies whatever the kit was resolved from — two React or
