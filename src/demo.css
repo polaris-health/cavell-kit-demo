@@ -1,0 +1,609 @@
+/* Kit-demo chrome. The LEFT side is the kit's own pixel-perfect surface (untouched);
+ * the RIGHT side is the harness control panel — dark, so it reads as tooling, not product. */
+
+body {
+	margin: 0;
+	font-family:
+		Inter,
+		system-ui,
+		-apple-system,
+		sans-serif;
+}
+
+.kd-layout {
+	display: flex;
+	height: 100vh;
+}
+
+.kd-assistant {
+	flex: 1;
+	min-width: 0;
+	height: 100%;
+}
+
+/* Display modes (ADR 0006 D7): the kit only reports the pick — this is a host applying it.
+ * sidepanel is the plain flex layout above; the other two lift the assistant out of it. */
+.kd-layout[data-display-mode='fullscreen'] .kd-assistant,
+.kd-layout[data-display-mode='overlay'] .kd-assistant {
+	position: fixed;
+	z-index: 100;
+	inset: 0;
+}
+
+.kd-layout[data-display-mode='overlay'] .kd-assistant {
+	inset: 5vh 5vw;
+	overflow: hidden;
+	border-radius: 16px;
+	box-shadow: 0 24px 64px rgb(0 0 0 / 45%);
+}
+
+.kd-resizer {
+	flex: 0 0 5px;
+	cursor: col-resize;
+	background: #23303a;
+	transition: background 0.15s;
+}
+
+.kd-resizer:hover,
+.kd-resizer:active {
+	background: #47c0b3;
+}
+
+/* ── Panel shell ─────────────────────────────────────────────────────────── */
+
+.kd-panel {
+	flex-shrink: 0;
+	overflow-y: auto;
+	background: #10181f;
+	color: #d7e2ea;
+	font-size: 12px;
+	line-height: 1.5;
+	border-left: 1px solid #23303a;
+}
+
+.kd-panel-header {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 12px 16px;
+	background: #0c1319;
+	border-bottom: 1px solid #23303a;
+}
+
+.kd-panel-title {
+	font-size: 13px;
+	font-weight: 650;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #9fb3bf;
+}
+
+.kd-section {
+	padding: 12px 16px 14px;
+	border-bottom: 1px solid #1b2731;
+}
+
+.kd-section-title {
+	margin: 0 0 8px;
+	font-size: 10.5px;
+	font-weight: 650;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: #5f7280;
+}
+
+/* ── Rows, chips, values ────────────────────────────────────────────────── */
+
+.kd-row {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	margin-bottom: 4px;
+}
+
+.kd-row-label {
+	flex: 0 0 118px;
+	color: #7d919e;
+}
+
+.kd-row-value {
+	min-width: 0;
+	word-break: break-all;
+}
+
+.kd-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin: 6px 0;
+}
+
+.kd-chip {
+	display: inline-block;
+	padding: 1px 10px;
+	border-radius: 999px;
+	font-size: 11px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.kd-chip-on {
+	background: #143c39;
+	color: #63d1c2;
+}
+
+.kd-chip-off {
+	background: #212b34;
+	color: #66788a;
+}
+
+.kd-chip-accent {
+	background: #1b2f45;
+	color: #7fb8ec;
+	max-width: 240px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.kd-phase-boot {
+	background: #3a2f17;
+	color: #d9a94f;
+}
+
+.kd-phase-welcome {
+	background: #1b2f45;
+	color: #7fb8ec;
+}
+
+.kd-phase-conversation {
+	background: #143c39;
+	color: #63d1c2;
+}
+
+.kd-code {
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: 11px;
+	color: #b7c9d4;
+}
+
+.kd-json {
+	margin: 6px 0 0;
+	padding: 6px 8px;
+	border-radius: 4px;
+	background: #0c1319;
+	border: 1px solid #1b2731;
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: 10.5px;
+	color: #8fa6b3;
+	word-break: break-all;
+	white-space: pre-wrap;
+	max-height: 130px;
+	overflow-y: auto;
+}
+
+/* ── Event feeds (tool callbacks / chrome / errors) ─────────────────────── */
+
+/* A feed with no entries hides itself AND its label — no empty boxes. */
+.kd-feed-block:has(.kd-feed:empty) {
+	display: none;
+}
+
+.kd-feed-label {
+	display: block;
+	margin: 8px 0 4px;
+	font-size: 10px;
+	font-weight: 650;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #5f7280;
+}
+
+.kd-feed {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.kd-feed-text {
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: 10.5px;
+	color: #63d1c2;
+	word-break: break-all;
+}
+
+.kd-feed-error {
+	color: #e0796c;
+}
+
+.kd-event {
+	border: 1px solid #1b2731;
+	border-radius: 6px;
+	background: #141e26;
+}
+
+.kd-event summary {
+	padding: 5px 10px;
+	cursor: pointer;
+	font-size: 10.5px;
+	color: #63d1c2;
+	word-break: break-all;
+}
+
+.kd-event pre {
+	margin: 0;
+	padding: 8px 10px;
+	border-top: 1px solid #1b2731;
+	font-size: 10px;
+	color: #8fa6b3;
+	white-space: pre-wrap;
+	word-break: break-all;
+	max-height: 220px;
+	overflow-y: auto;
+}
+
+/* ── Frontend tools ─────────────────────────────────────────────────────── */
+
+.kd-tools {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.kd-tool {
+	padding: 6px 10px;
+	border: 1px solid #1b2731;
+	border-radius: 6px;
+	background: #141e26;
+}
+
+.kd-tool-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: 11px;
+	color: #b7c9d4;
+}
+
+.kd-tool-desc {
+	margin: 3px 0 0;
+	color: #66788a;
+	font-size: 10.5px;
+	line-height: 1.4;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+/* ── Host context editor ────────────────────────────────────────────────── */
+
+.kd-ctx-entries {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	margin-bottom: 8px;
+}
+
+.kd-ctx-entry {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 3px 8px;
+	border-radius: 4px;
+	background: #141e26;
+	border: 1px solid #1b2731;
+	font-size: 10.5px;
+}
+
+.kd-ctx-entry-key {
+	color: #7fb8ec;
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	white-space: nowrap;
+}
+
+.kd-ctx-entry-value {
+	flex: 1;
+	min-width: 0;
+	color: #8fa6b3;
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	word-break: break-all;
+}
+
+.kd-ctx-entry-remove {
+	border: none;
+	background: none;
+	color: #66788a;
+	cursor: pointer;
+	font-size: 11px;
+	padding: 2px 4px;
+}
+
+.kd-ctx-entry-remove:hover {
+	color: #e0796c;
+}
+
+.kd-problem-controls {
+	margin-top: 8px;
+}
+
+.kd-patient-controls {
+	margin-top: 8px;
+	margin-bottom: 0;
+}
+
+.kd-alert {
+	margin: 6px 0 0;
+	padding: 6px 10px;
+	border-radius: 4px;
+	background: #40211d;
+	border-left: 3px solid #e0796c;
+	color: #f0b0a7;
+}
+
+.kd-empty {
+	color: #4d6070;
+	font-style: italic;
+}
+
+.kd-details summary {
+	cursor: pointer;
+	color: #7d919e;
+	margin-top: 6px;
+}
+
+/* ── Controls ───────────────────────────────────────────────────────────── */
+
+.kd-panel select {
+	padding: 6px 10px;
+	border-radius: 6px;
+	border: 1px solid #2b3945;
+	background: #0c1319;
+	color: #d7e2ea;
+	font-size: 12px;
+	font-family: inherit;
+}
+
+.kd-panel input:not([type='checkbox']) {
+	flex: 1;
+	min-width: 0;
+	padding: 6px 10px;
+	border-radius: 6px;
+	border: 1px solid #2b3945;
+	background: #0c1319;
+	color: #d7e2ea;
+	font-size: 12px;
+	font-family: inherit;
+}
+
+.kd-panel input::placeholder {
+	color: #4d6070;
+}
+
+.kd-panel input:focus-visible {
+	outline: 2px solid #2d6f68;
+	outline-offset: -1px;
+}
+
+.kd-btn {
+	padding: 6px 12px;
+	border-radius: 6px;
+	border: 1px solid #2b3945;
+	background: #1a252e;
+	color: #c3d3dd;
+	font-size: 12px;
+	font-weight: 600;
+	font-family: inherit;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.kd-btn:enabled:hover {
+	background: #223039;
+	border-color: #3a4c5a;
+}
+
+.kd-btn:disabled {
+	opacity: 0.45;
+	cursor: default;
+}
+
+.kd-btn-primary {
+	background: #1d5b55;
+	border-color: #2d6f68;
+	color: #d9f4ef;
+}
+
+.kd-btn-primary:enabled:hover {
+	background: #23695f;
+	border-color: #3a857b;
+}
+
+.kd-composer {
+	display: flex;
+	gap: 6px;
+	margin-bottom: 8px;
+}
+
+.kd-btn-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-bottom: 6px;
+}
+
+.kd-suggestion {
+	padding: 4px 12px;
+	border-radius: 999px;
+	border: 1px solid #2d6f68;
+	background: transparent;
+	color: #63d1c2;
+	font-size: 11px;
+	font-family: inherit;
+	cursor: pointer;
+	text-align: left;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.kd-suggestion:hover {
+	background: #143c39;
+}
+
+/* ── Sessions ───────────────────────────────────────────────────────────── */
+
+.kd-sessions {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin-top: 6px;
+	max-height: 220px;
+	overflow-y: auto;
+}
+
+.kd-session-row {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	width: 100%;
+	text-align: left;
+	padding: 6px 10px;
+	border-radius: 6px;
+	border: 1px solid #1b2731;
+	background: #141e26;
+	color: #c3d3dd;
+	font-size: 11.5px;
+	font-family: inherit;
+	cursor: pointer;
+}
+
+.kd-session-row:hover {
+	border-color: #3a4c5a;
+	background: #1a252e;
+}
+
+.kd-session-preview {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.kd-session-id {
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: 9.5px;
+	color: #5f7280;
+}
+
+/* ── Config form ────────────────────────────────────────────────────────── */
+
+.kd-config {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.kd-config label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: #7d919e;
+}
+
+.kd-config label:not(.kd-config-check) {
+	justify-content: space-between;
+}
+
+.kd-config-check {
+	cursor: pointer;
+}
+
+/* ── Cards rendered by host hooks (HITL / interrupts / custom renderer) ──── */
+
+.kd-hitl-card,
+.kd-interrupt-card {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 6px 0;
+	padding: 8px 12px;
+	border-radius: 6px;
+	border: 1px solid #2d6f68;
+	background: #12211f;
+	color: #a9c7c0;
+}
+
+.kd-interrupt-card code {
+	font-size: 10.5px;
+	word-break: break-all;
+}
+
+.kd-office-hours {
+	padding: 8px 12px;
+	border-radius: 6px;
+	background: #eef7f0;
+	color: #1f3b2c;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+/* The custom renderer card lives INSIDE the kit surface (light) — style accordingly. */
+.kd-protocol-card {
+	margin: 12px 0;
+	padding: 10px 14px;
+	border-radius: 8px;
+	border: 1px dashed #0b7c74;
+	background: #f0faf8;
+	color: #1f2b33;
+	font-size: 13px;
+	word-break: break-all;
+}
+
+.kd-protocol-badge {
+	display: inline-block;
+	margin-right: 8px;
+	padding: 1px 8px;
+	border-radius: 999px;
+	background: #0b7c74;
+	color: #fff;
+	font-size: 10px;
+	font-weight: 650;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+/* ── Token form ─────────────────────────────────────────────────────────── */
+
+.kd-token-form {
+	max-width: 640px;
+	margin: 80px auto;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 24px;
+	border-radius: 12px;
+	border: 1px solid #dbe3e7;
+}
+
+.kd-token-form input,
+.kd-token-form select {
+	padding: 10px 12px;
+	border-radius: 6px;
+	border: 1px solid #cbd5dc;
+	font-size: 14px;
+	font-family: inherit;
+}
+
+.kd-token-form label {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	color: #7d919e;
+	font-size: 13px;
+}
