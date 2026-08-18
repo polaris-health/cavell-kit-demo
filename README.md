@@ -22,6 +22,12 @@ yarn install
 yarn dev          # http://localhost:5176
 ```
 
+No credentials or registry setup needed: `.yarnrc.yml` in this repo already points the `@cavell`
+scope at the Cavell registry for the environment this branch tracks, which is how `@cavell/kit`
+resolves from the plain `^` range in `package.json`. Those two files are the whole install
+contract — copy them into your own app, swapping the registry URL for the environment you build
+against (the integration guide for each environment lists it).
+
 Icons render as empty boxes and text falls back to system fonts until you supply the peer assets
 — see below.
 
@@ -75,8 +81,9 @@ npmScopes:
         npmAuthToken: '<your FA Pro token>'
 ```
 
-Keep the token out of version control — `YARN_NPM_AUTH_TOKEN` in the environment works instead of
-the `npmAuthToken` line. Then install and import the stylesheet:
+Add it _beside_ the existing `cavell` entry — `npmScopes` is one key holding every scope, not one
+block per scope. Keep the token out of version control: `YARN_NPM_AUTH_TOKEN` in the environment
+works instead of the `npmAuthToken` line. Then install and import the stylesheet:
 
 ```bash
 yarn add @fortawesome/fontawesome-pro
@@ -139,8 +146,8 @@ you drop there cannot be committed by accident.
 
 ## Running a different kit release
 
-`yarn dev` uses the `@cavell/kit` version pinned in `package.json` — the release this branch was
-generated against. To try another one without touching your lockfile:
+`yarn dev` uses the `@cavell/kit` version in your lockfile — the release this branch was generated
+against. To try another one without touching that lockfile:
 
 ```bash
 yarn dev:qa                # latest qa release
@@ -163,14 +170,16 @@ credentials. The three commands above are public downloads.)
   session list, feedback, context declarations. Written to be copied from.
 - `public/README.md` — the peer-asset contract in one page (the paths, the folder layout, what
   happens without them).
-- `package.json` — the dependency shape a host needs: `@cavell/kit` (pinned to this branch's
-  released build) plus the exact-version peers (`@copilotkit/react-core`, `@ag-ui/client`,
-  `@ag-ui/core`) and `react`/`react-dom`/`zod`.
+- `package.json` + `.yarnrc.yml` — the dependency shape a host needs: `@cavell/kit` as a semver
+  range, the `@cavell` scope pointed at this environment's registry, and the exact-version peers
+  (`@copilotkit/react-core`, `@ag-ui/client`, `@ag-ui/core`) alongside `react`/`react-dom`/`zod`.
 
 ## Versioning
 
-`package.json`'s `version` is the `@cavell/kit` release this commit was generated against. The
-kit sends that version on every request (`X-Cavell-Kit-Version`); the backend guarantees
+`package.json`'s `version` is the `@cavell/kit` release this commit was generated against, and the
+`@cavell/kit` range was opened at that release — `yarn up @cavell/kit` moves you to the newest one
+this channel offers within the range. The kit sends its version on every request
+(`X-Cavell-Kit-Version`); the backend guarantees
 backwards compatibility with every released version, and will answer with a structured
 `client_outdated` error in the rare case a build is ever end-of-lifed — the surface then shows
 an update-required notice.

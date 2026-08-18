@@ -1,4 +1,4 @@
-/* Kit-demo chrome. The LEFT side is the kit's own pixel-perfect surface (untouched);
+/* Kit-demo shell. The LEFT side is the kit's own pixel-perfect surface (untouched);
  * the RIGHT side is the harness control panel — dark, so it reads as tooling, not product. */
 
 body {
@@ -10,9 +10,16 @@ body {
 		sans-serif;
 }
 
-.kd-layout {
+/* The harness row: the kit surface, the resizer and the panel are siblings under App. */
+.kd-app {
 	display: flex;
 	height: 100vh;
+}
+
+.kd-layout {
+	display: flex;
+	flex: 1;
+	min-width: 0;
 }
 
 .kd-assistant {
@@ -23,14 +30,14 @@ body {
 
 /* Display modes (ADR 0006 D7): the kit only reports the pick — this is a host applying it.
  * sidepanel is the plain flex layout above; the other two lift the assistant out of it. */
-.kd-layout[data-display-mode='fullscreen'] .kd-assistant,
-.kd-layout[data-display-mode='overlay'] .kd-assistant {
+.kd-display-fullscreen .kd-assistant,
+.kd-display-overlay .kd-assistant {
 	position: fixed;
 	z-index: 100;
 	inset: 0;
 }
 
-.kd-layout[data-display-mode='overlay'] .kd-assistant {
+.kd-display-overlay .kd-assistant {
 	inset: 5vh 5vw;
 	overflow: hidden;
 	border-radius: 16px;
@@ -185,7 +192,7 @@ body {
 	overflow-y: auto;
 }
 
-/* ── Event feeds (tool callbacks / chrome / errors) ─────────────────────── */
+/* ── Event feeds (tool callbacks / window controls / errors) ────────────── */
 
 /* A feed with no entries hides itself AND its label — no empty boxes. */
 .kd-feed-block:has(.kd-feed:empty) {
@@ -276,6 +283,7 @@ body {
 	font-size: 10.5px;
 	line-height: 1.4;
 	display: -webkit-box;
+	line-clamp: 2;
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
@@ -335,6 +343,10 @@ body {
 .kd-patient-controls {
 	margin-top: 8px;
 	margin-bottom: 0;
+}
+
+.kd-caregiver-controls {
+	margin-top: 8px;
 }
 
 .kd-alert {
@@ -522,6 +534,17 @@ body {
 
 .kd-config-check {
 	cursor: pointer;
+}
+
+.kd-config-modes {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	color: #7d919e;
+}
+
+.kd-config-modes label {
+	padding-left: 12px;
 }
 
 /* ── Cards rendered by host hooks (HITL / interrupts / custom renderer) ──── */
