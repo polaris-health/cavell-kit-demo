@@ -57,3 +57,9 @@ export const isCapabilityOverrides = (value: unknown): value is Partial<CavellCa
 		([key, flag]) => (CAPABILITY_KEYS as readonly string[]).includes(key) && typeof flag === 'boolean',
 	)
 }
+
+/** `?context=` is the initial host context handed to the provider, so its keys are whatever the
+ *  agent's context handlers understand — this guard only insists on a plain JSON object. */
+export const isContextObject = (value: unknown): value is Record<string, unknown> => {
+	return typeof value === 'object' && value !== null && !Array.isArray(value)
+}

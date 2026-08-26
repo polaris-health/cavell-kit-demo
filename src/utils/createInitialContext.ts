@@ -1,9 +1,24 @@
 import params from '../params'
+import parsePatientId from './parsePatientId'
 
+/**
+ * The host context handed to `CavellProvider` on mount. This is the context the kit boots with, so
+ * it is what conversation preloading reads: the session-list scope (patient) and the auto-resume
+ * match (problem) both come from the INIT-time context, not from a later declaration.
+ *
+ * `?context=` is the whole context verbatim, for exercising exactly that; the single-key params
+ * (`?patient=`/`?patient_name=`/`?problem=`/`?specialty=`) are shorthand for the keys the demo
+ * declares most, and `?context=` replaces them wholesale rather than merging — one URL, one answer
+ * to "what did the kit boot with".
+ */
 const createInitialContext = (): Record<string, unknown> => {
+	if (params.initialContext) {
+		return { ...params.initialContext }
+	}
+
 	const context: Record<string, unknown> = {}
 	if (params.patientId) {
-		Object.assign(context, patientIdField(params.patientId))
+		Object.assign(context, parsePatientId(params.patientId))
 		if (params.patientName) {
 			context.patient_name = params.patientName
 		}
@@ -17,9 +32,5 @@ const createInitialContext = (): Record<string, unknown> => {
 
 	return context
 }
-
-/** A numeric id is the legacy emr spelling (patient_id); anything else is a resource UUID. */
-const patientIdField = (id: string): Record<string, unknown> =>
-	/^\d+$/.test(id) ? { patient_id: Number(id) } : { patient_resource_id: id }
 
 export default createInitialContext

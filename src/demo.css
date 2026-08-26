@@ -393,11 +393,26 @@ body {
 	font-family: inherit;
 }
 
-.kd-panel input::placeholder {
+.kd-panel textarea {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 6px 10px;
+	border-radius: 6px;
+	border: 1px solid #2b3945;
+	background: #0c1319;
+	color: #d7e2ea;
+	font-size: 11.5px;
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	resize: vertical;
+}
+
+.kd-panel input::placeholder,
+.kd-panel textarea::placeholder {
 	color: #4d6070;
 }
 
-.kd-panel input:focus-visible {
+.kd-panel input:focus-visible,
+.kd-panel textarea:focus-visible {
 	outline: 2px solid #2d6f68;
 	outline-offset: -1px;
 }
@@ -534,6 +549,13 @@ body {
 
 .kd-config-check {
 	cursor: pointer;
+}
+
+/* Stacked, unlike the one-line rows — and specific enough to beat the space-between above. */
+.kd-config label.kd-config-context {
+	flex-direction: column;
+	align-items: stretch;
+	gap: 4px;
 }
 
 .kd-config-modes {

@@ -4,7 +4,7 @@
  */
 import type { AutoScrollMode, CavellCapabilities, DisplayMode } from '@cavell/kit'
 
-import { BACKENDS, isAutoScrollMode, isCapabilityOverrides, isDisplayMode } from './typeguards'
+import { BACKENDS, isAutoScrollMode, isCapabilityOverrides, isContextObject, isDisplayMode } from './typeguards'
 
 const DEFAULT_NONCE = 'KD-NONCE'
 const DEFAULT_AGENT_ID = 'careconnect_gp'
@@ -18,6 +18,10 @@ interface DemoParams {
 	caps: string // Raw `?caps=` for the config-form input, beside the validated overrides the provider takes.
 	capabilities: Partial<CavellCapabilities> | undefined
 	threadId: string | undefined
+	contextJson: string // Raw `?context=` for the config-form textarea, beside the parsed object below.
+	/** The whole initial host context, verbatim. When present it REPLACES the single-key params
+	 *  below (patient/patient_name/problem/specialty) — see createInitialContext. */
+	initialContext: Record<string, unknown> | undefined
 	patientId: string | undefined
 	patientName: string | undefined
 	problem: string | undefined
@@ -68,6 +72,28 @@ const parseCapabilities = (raw: string): Partial<CavellCapabilities> | undefined
 	return undefined
 }
 
+/** Same policy as `?caps=`: a malformed value is a URL typo — warn and fall through to the
+ *  single-key params, rather than taking the demo down mid-render. The harness panel has a
+ *  textarea for this value, which validates before it ever reaches the URL. */
+const parseContext = (raw: string): Record<string, unknown> | undefined => {
+	if (!raw) {
+		return undefined
+	}
+
+	try {
+		const parsed: unknown = JSON.parse(raw)
+		if (isContextObject(parsed)) {
+			return parsed
+		}
+	} catch {
+		// A SyntaxError and a well-formed non-object (array, number, null) share the warning below.
+	}
+
+	console.warn(`[kit-demo] ignoring malformed ?context= (${raw})`)
+
+	return undefined
+}
+
 /** `?display_modes=` picks (and orders) the rows of the kit's ⋮ menu — `none` drops the button.
  *  Same policy as `?caps=`: a value with any unknown mode is a typo, and half-applying a typo is
  *  worse than ignoring it. */
@@ -95,6 +121,7 @@ const readDemoParams = (search: string): DemoParams => {
 	const params = new URLSearchParams(search)
 	const base = params.get('base') ?? ''
 	const caps = params.get('caps') ?? ''
+	const context = params.get('context') ?? ''
 	const autoScroll = params.get('auto_scroll')
 
 	return {
@@ -106,6 +133,8 @@ const readDemoParams = (search: string): DemoParams => {
 		caps,
 		capabilities: parseCapabilities(caps),
 		threadId: params.get('thread') || undefined,
+		contextJson: context,
+		initialContext: parseContext(context),
 		patientId: params.get('patient') || undefined,
 		patientName: params.get('patient_name') || undefined,
 		problem: params.get('problem') || undefined,
