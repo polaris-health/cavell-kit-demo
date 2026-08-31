@@ -6,6 +6,12 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
 import App from './App'
+import checkKitStylesheet from './devStylesheetCheck'
+
+// Dropped from production builds, so the Playwright suites (which build the demo) never see it.
+if (import.meta.env.DEV) {
+	checkKitStylesheet()
+}
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
