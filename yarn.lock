@@ -305,9 +305,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cavell/kit@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "@cavell/kit@npm:1.0.3::__archiveUrl=https%3A%2F%2Fstaging.cavell-kit.corilus.cavell.app%2Fbuilds%2F1.0.3%2Fcavell-kit-1.0.3.tgz"
+"@cavell/kit@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "@cavell/kit@npm:1.0.4::__archiveUrl=https%3A%2F%2Fstaging.cavell-kit.corilus.cavell.app%2Fbuilds%2F1.0.4%2Fcavell-kit-1.0.4.tgz"
   dependencies:
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.1.1"
@@ -323,7 +323,7 @@ __metadata:
     "@copilotkit/react-core": 1.65.0
     react: ^19
     react-dom: ^19
-  checksum: 10c0/cfb05654f133b10743930b92be86d87bfe726932f26859e301c0969cb123ed300d58fc15d5c48e1c55fe9cb26b10428cdf09fc75f51bb7a68f7529633f461c8e
+  checksum: 10c0/923e307bde1a671368c0517323fbcc188ae89cf84632aceb0af02f71a34c01f698cd108958337b107ea221f420384963ab7e306c8a913516b4108e88f071f59f
   languageName: node
   linkType: hard
 
@@ -2305,7 +2305,7 @@ __metadata:
   dependencies:
     "@ag-ui/client": "npm:0.0.57"
     "@ag-ui/core": "npm:0.0.57"
-    "@cavell/kit": "npm:^1.0.3"
+    "@cavell/kit": "npm:^1.0.4"
     "@copilotkit/react-core": "npm:1.65.0"
     "@types/node": "npm:^24.12.2"
     "@types/react": "npm:^19"
@@ -5631,9 +5631,9 @@ __metadata:
   linkType: hard
 
 "undici@npm:^8.4.1":
-  version: 8.10.0
-  resolution: "undici@npm:8.10.0"
-  checksum: 10c0/37ae2b1db8f65c3a003504e2040e96887b99f9db16ba07dcf49c37ed8b7f8c72f4452f2d46f52f7c9e49518fe8325e3b5e7e02ac3a2424886bd67d4b62a0ecab
+  version: 8.10.1
+  resolution: "undici@npm:8.10.1"
+  checksum: 10c0/90ac5636aa9d22fb710a261ef05e136df6b4bd7a0122201796bd2eb59ccab6661cdf4f635e543ca04420379eafe3f4d214031bbc7623214287988881c24dad55
   languageName: node
   linkType: hard
 

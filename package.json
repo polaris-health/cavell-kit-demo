@@ -1,7 +1,7 @@
 {
 	"name": "cavell-kit-demo",
 	"private": true,
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"type": "module",
 	"license": "MIT",
 	"scripts": {
@@ -17,7 +17,7 @@
 	"dependencies": {
 		"@ag-ui/client": "0.0.57",
 		"@ag-ui/core": "0.0.57",
-		"@cavell/kit": "^1.0.3",
+		"@cavell/kit": "^1.0.4",
 		"@copilotkit/react-core": "1.65.0",
 		"react": "^19",
 		"react-dom": "^19",
