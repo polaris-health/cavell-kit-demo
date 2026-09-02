@@ -10,6 +10,7 @@ import FrontendToolsTool from './components/FrontendToolsTool'
 import HistoryTool from './components/HistoryTool'
 import HostContextTool from './components/HostContextTool'
 import InterruptHostTool from './components/InterruptHostTool'
+import RecordingTool from './components/RecordingTool'
 import SessionTool from './components/SessionTool'
 import ToolingHeader from './components/ToolingHeader'
 import { getPanelWidth, setPanelWidth, subscribe } from './panelWidth'
@@ -19,11 +20,27 @@ interface Props {
 	userEvents: ToolCallbackEvent[]
 	windowControlsLog: string[]
 	errorLog: string[]
+	recordingLog: string[]
+	difficultWords: string
+	onDifficultWordsChange: (words: string) => void
+	recordingContext: string
+	onRecordingContextChange: (context: string) => void
 	onContextChange: (context: Record<string, unknown>) => void
 }
 
 const Tooling = (props: Props) => {
-	const { autoEvents, userEvents, windowControlsLog, errorLog, onContextChange } = props
+	const {
+		autoEvents,
+		userEvents,
+		windowControlsLog,
+		errorLog,
+		recordingLog,
+		difficultWords,
+		onDifficultWordsChange,
+		recordingContext,
+		onRecordingContextChange,
+		onContextChange,
+	} = props
 
 	const width = useSyncExternalStore(subscribe, getPanelWidth)
 
@@ -57,6 +74,13 @@ const Tooling = (props: Props) => {
 				<FrontendToolsTool />
 				<ConversationTool />
 				<HostContextTool onContextChange={onContextChange} />
+				<RecordingTool
+					recordingLog={recordingLog}
+					difficultWords={difficultWords}
+					onDifficultWordsChange={onDifficultWordsChange}
+					recordingContext={recordingContext}
+					onRecordingContextChange={onRecordingContextChange}
+				/>
 				<HistoryTool />
 				<EventsTool
 					errorLog={errorLog}

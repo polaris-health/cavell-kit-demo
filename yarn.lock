@@ -299,15 +299,15 @@ __metadata:
   linkType: hard
 
 "@bufbuild/protobuf@npm:^2.2.5":
-  version: 2.14.0
-  resolution: "@bufbuild/protobuf@npm:2.14.0"
-  checksum: 10c0/29f434e45d484012c7b6ecfa1265b2ca430fb88aed3dc222a31f553ab1ee4ac81ddbf79f88a1665353af5703bfd5d0db25a22eb378a641667938e7d8aa4c1c47
+  version: 2.14.1
+  resolution: "@bufbuild/protobuf@npm:2.14.1"
+  checksum: 10c0/3f913aca03df8419c4b21d800ea54d7f6c836a5343e65d6f686279ec3566c4907729938ef2f94a5e27d92e8d3f4adcd6e027118ba29ba764d21e1c637cddc702
   languageName: node
   linkType: hard
 
-"@cavell/kit@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "@cavell/kit@npm:1.0.4::__archiveUrl=https%3A%2F%2Fqa.cavell-kit.corilus.cavell.app%2Fbuilds%2F1.0.4%2Fcavell-kit-1.0.4.tgz"
+"@cavell/kit@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "@cavell/kit@npm:1.0.5::__archiveUrl=https%3A%2F%2Fqa.cavell-kit.corilus.cavell.app%2Fbuilds%2F1.0.5%2Fcavell-kit-1.0.5.tgz"
   dependencies:
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.1.1"
@@ -315,6 +315,7 @@ __metadata:
     rehype-raw: "npm:^7.0.0"
     rehype-sanitize: "npm:^6.0.0"
     remark-gfm: "npm:^4.0.1"
+    socket.io-client: "npm:^4.8.3"
     tailwind-merge: "npm:^3.6.0"
     zustand: "npm:^4.5.5"
   peerDependencies:
@@ -323,7 +324,7 @@ __metadata:
     "@copilotkit/react-core": 1.65.0
     react: ^19
     react-dom: ^19
-  checksum: 10c0/923e307bde1a671368c0517323fbcc188ae89cf84632aceb0af02f71a34c01f698cd108958337b107ea221f420384963ab7e306c8a913516b4108e88f071f59f
+  checksum: 10c0/05e2dff4898b908abee068cb06d1775f1e2b98f72133c74aa4f200e3c8ac0f12e464236a9c4009bd204a654a2103ecd55941259657f45dbcb5baec08816f9343
   languageName: node
   linkType: hard
 
@@ -1653,6 +1654,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@socket.io/component-emitter@npm:~3.1.0":
+  version: 3.1.2
+  resolution: "@socket.io/component-emitter@npm:3.1.2"
+  checksum: 10c0/c4242bad66f67e6f7b712733d25b43cbb9e19a595c8701c3ad99cbeb5901555f78b095e24852f862fffb43e96f1d8552e62def885ca82ae1bb05da3668fd87d7
+  languageName: node
+  linkType: hard
+
 "@standard-schema/spec@npm:^1.0.0":
   version: 1.1.0
   resolution: "@standard-schema/spec@npm:1.1.0"
@@ -2305,7 +2313,7 @@ __metadata:
   dependencies:
     "@ag-ui/client": "npm:0.0.57"
     "@ag-ui/core": "npm:0.0.57"
-    "@cavell/kit": "npm:^1.0.4"
+    "@cavell/kit": "npm:^1.0.5"
     "@copilotkit/react-core": "npm:1.65.0"
     "@types/node": "npm:^24.12.2"
     "@types/react": "npm:^19"
@@ -2870,7 +2878,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.3.1":
+"debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.3.1, debug@npm:~4.4.1":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
   dependencies:
@@ -2950,9 +2958,29 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.402":
-  version: 1.5.417
-  resolution: "electron-to-chromium@npm:1.5.417"
-  checksum: 10c0/268f13ddc2c032f72b4aef74db90d1d0f71e188bc62f82fe2d020ef45dd9b7078ac01177f9de4e28b82f73efed3cf1a27a680c9d6a9173ce96766c9cbe7202fd
+  version: 1.5.419
+  resolution: "electron-to-chromium@npm:1.5.419"
+  checksum: 10c0/e9ffd64ef9c41b970ee6a822e845f03251c16a17f33f86ad29c5daf76a445c07eeb2044be5f0212cb8ea0122277f4bc8c5b7fe448372d4b5d0a7523f7f12b2c1
+  languageName: node
+  linkType: hard
+
+"engine.io-client@npm:~6.6.1":
+  version: 6.6.6
+  resolution: "engine.io-client@npm:6.6.6"
+  dependencies:
+    "@socket.io/component-emitter": "npm:~3.1.0"
+    debug: "npm:~4.4.1"
+    engine.io-parser: "npm:~5.2.1"
+    ws: "npm:~8.21.0"
+    xmlhttprequest-ssl: "npm:~2.1.1"
+  checksum: 10c0/805995b57b2656f52322004b4d767851b517618b1fcecabf5968c55ce6864c692e594fe3a6ae9284504aa087a5a872b0ea1b76b876dcf4cf866907bd61e9e1dd
+  languageName: node
+  linkType: hard
+
+"engine.io-parser@npm:~5.2.1":
+  version: 5.2.3
+  resolution: "engine.io-parser@npm:5.2.3"
+  checksum: 10c0/ed4900d8dbef470ab3839ccf3bfa79ee518ea8277c7f1f2759e8c22a48f64e687ea5e474291394d0c94f84054749fd93f3ef0acb51fa2f5f234cc9d9d8e7c536
   languageName: node
   linkType: hard
 
@@ -5417,6 +5445,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"socket.io-client@npm:^4.8.3":
+  version: 4.8.3
+  resolution: "socket.io-client@npm:4.8.3"
+  dependencies:
+    "@socket.io/component-emitter": "npm:~3.1.0"
+    debug: "npm:~4.4.1"
+    engine.io-client: "npm:~6.6.1"
+    socket.io-parser: "npm:~4.2.4"
+  checksum: 10c0/76c0d86de0b636d0bf5011cf3425212c900f43dac632db6eb493816920cd035af7ddd92fea9a106b45eb347405953c0414eb3a5d465b180215e46fc8b61420b3
+  languageName: node
+  linkType: hard
+
+"socket.io-parser@npm:~4.2.4":
+  version: 4.2.7
+  resolution: "socket.io-parser@npm:4.2.7"
+  dependencies:
+    "@socket.io/component-emitter": "npm:~3.1.0"
+    debug: "npm:~4.4.1"
+  checksum: 10c0/16a5579718b871114ca644d688987dd3cf9292010c949fb083633eefbc1d8fdaf424691d6511d746e5c10f5c88cbd8911cd0b1e807242159f40989be90842b4e
+  languageName: node
+  linkType: hard
+
 "source-map-js@npm:^1.2.1":
   version: 1.2.1
   resolution: "source-map-js@npm:1.2.1"
@@ -6051,6 +6101,28 @@ __metadata:
   version: 6.3.6
   resolution: "wonka@npm:6.3.6"
   checksum: 10c0/a8887a7766cf9519b4f80b43842fe1b6575a0f5edf397c5a32c267185bd999af9d3c42d91d6d7cd86d3ec89fdc5f8909bb542004d184fcaad794d25e821ff70d
+  languageName: node
+  linkType: hard
+
+"ws@npm:~8.21.0":
+  version: 8.21.3
+  resolution: "ws@npm:8.21.3"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 10c0/7b28dc2863ea0e2cece68d142a3eee90361021b73f750431e6d8076bb7dede5fdfdb75b3d29534b62f411261147b76b1bc80fb5cc63ab0aabd467280e85b22e0
+  languageName: node
+  linkType: hard
+
+"xmlhttprequest-ssl@npm:~2.1.1":
+  version: 2.1.2
+  resolution: "xmlhttprequest-ssl@npm:2.1.2"
+  checksum: 10c0/70d60869323e823f473a238f78fd108437edbc3690ecd5859c39c83217080090a18899b272e515769c0d1f518cc64cbed6b6995b23fdd7ba13b297d530b6e631
   languageName: node
   linkType: hard
 

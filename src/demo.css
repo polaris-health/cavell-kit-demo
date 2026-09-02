@@ -411,6 +411,15 @@ body {
 	color: #4d6070;
 }
 
+/* The Recording section's FHIR-context editor: a stacked label, like the config panel's. */
+.kd-recording-context {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	color: #7d919e;
+	font-size: 12px;
+}
+
 .kd-panel input:focus-visible,
 .kd-panel textarea:focus-visible {
 	outline: 2px solid #2d6f68;

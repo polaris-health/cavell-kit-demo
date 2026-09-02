@@ -4,6 +4,7 @@
  */
 import type { AutoScrollMode, CavellCapabilities, DisplayMode } from '@cavell/kit'
 
+import agentCapabilityDefaults from './agentCapabilityDefaults'
 import { BACKENDS, isAutoScrollMode, isCapabilityOverrides, isContextObject, isDisplayMode } from './typeguards'
 
 const DEFAULT_NONCE = 'KD-NONCE'
@@ -24,6 +25,9 @@ interface DemoParams {
 	initialContext: Record<string, unknown> | undefined
 	patientId: string | undefined
 	patientName: string | undefined
+	/** Host-declared FHIR administrative gender (male/female/other/unknown) — a first-class
+	 *  context element: it feeds the specialist note template's Patient context. */
+	patientGender: string | undefined
 	problem: string | undefined
 	/** Host-declared caregiver specialty. Lands in the context as
 	 *  `current_caregiver_speciality` — the backend's spelling of the key. */
@@ -123,20 +127,25 @@ const readDemoParams = (search: string): DemoParams => {
 	const caps = params.get('caps') ?? ''
 	const context = params.get('context') ?? ''
 	const autoScroll = params.get('auto_scroll')
+	const agent = params.get('agent') || DEFAULT_AGENT_ID
+	const runUrl = params.get('run_url') || undefined
 
 	return {
 		token: params.get('token') ?? '',
-		agent: params.get('agent') || DEFAULT_AGENT_ID,
+		agent,
 		base,
 		baseUrl: resolveBaseUrl(base),
-		runUrl: params.get('run_url') || undefined,
+		runUrl,
 		caps,
-		capabilities: parseCapabilities(caps),
+		// The agent's recommended baseline (cavell-docs/agents.md), with any explicit ?caps=
+		// override layered on top — the kit's own profile defaults fill the rest.
+		capabilities: { ...agentCapabilityDefaults(agent, Boolean(runUrl)), ...parseCapabilities(caps) },
 		threadId: params.get('thread') || undefined,
 		contextJson: context,
 		initialContext: parseContext(context),
 		patientId: params.get('patient') || undefined,
 		patientName: params.get('patient_name') || undefined,
+		patientGender: params.get('patient_gender') || undefined,
 		problem: params.get('problem') || undefined,
 		specialty: params.get('specialty') || undefined,
 		locale: params.get('locale') || undefined,
