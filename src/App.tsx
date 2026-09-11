@@ -120,6 +120,9 @@ const App = () => {
 			prompt={params.prompt}
 			locale={params.locale}
 			agentId={params.agent}
+			agentVersion={params.agentVersion}
+			// Direct: undefined, the kit builds the backend run URL. Via proxy (?proxy=) or a bare
+			// endpoint (?run_url=): the run alone goes there; every side channel keeps using baseUrl.
 			runUrl={params.runUrl}
 			baseUrl={params.baseUrl}
 			threadId={params.threadId}

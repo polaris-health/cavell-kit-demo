@@ -8,6 +8,8 @@ const AGENT_CAPABILITY_RECOMMENDATIONS: Partial<Record<string, Partial<CavellCap
 	// Note generation is the only workflow today — starters have nothing else to suggest.
 	// `recording` is the core workflow, unlike the GP (not yet fully supported — leave off there).
 	careconnect_specialist: { recording: true, starters: false },
+	// Same shape as the specialist: consultation documentation is the whole workflow.
+	careconnect_physiotherapist: { recording: true, starters: false },
 }
 
 /** The recommended capability baseline for `agentId`, applied UNDER the kit's own profile

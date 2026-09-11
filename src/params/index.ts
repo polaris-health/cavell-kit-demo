@@ -2,9 +2,10 @@
  * The demo's whole configuration surface: every URL search param, parsed and validated once.
  * The reader's table lives in ../../README.md.
  */
-import type { AutoScrollMode, CavellCapabilities, DisplayMode } from '@cavell/kit'
+import { type AutoScrollMode, type CavellCapabilities, type DisplayMode, genericProfileTarget } from '@cavell/kit'
 
 import agentCapabilityDefaults from './agentCapabilityDefaults'
+import { defaultProxyAgentName, proxyRunUrl, resolveProxyOrigin } from './runProxy'
 import { BACKENDS, isAutoScrollMode, isCapabilityOverrides, isContextObject, isDisplayMode } from './typeguards'
 
 const DEFAULT_NONCE = 'KD-NONCE'
@@ -13,9 +14,22 @@ const DEFAULT_AGENT_ID = 'careconnect_gp'
 interface DemoParams {
 	token: string // Empty means the token form asks for one instead of mounting the provider.
 	agent: string
+	/** `?agent_version=N` pins one backend version of the agent (ADR 0012); absent = latest stable. */
+	agentVersion: number | undefined
 	base: string // Raw `?base=`: a BackendKey or a literal origin; the provider takes `baseUrl`.
 	baseUrl: string
+	/** The run endpoint the provider takes: an explicit `?run_url=` (any AG-UI agent) wins, else the
+	 *  CareConnect proxy's run URL when `?proxy=` is set, else undefined (the kit builds the direct
+	 *  `{baseUrl}/api/v2/ai-companion/agents/{agent}/run` itself). */
 	runUrl: string | undefined
+	explicitRunUrl: string | undefined // Raw `?run_url=` for the config-form input.
+	/** Raw `?proxy=`: a RunProxyKey (`qa`/`acc`) or a literal proxy origin; '' = direct to the
+	 *  backend. Toggles the kit-via-proxy traffic pattern of cavell-docs/proxy.md: the run through
+	 *  the CareConnect AI smart proxy, everything else straight to `baseUrl`. */
+	proxy: string
+	proxyOrigin: string | undefined
+	/** The agent's name in the proxy's registry (`?proxy_agent=`; defaults per `agent`). */
+	proxyAgent: string
 	caps: string // Raw `?caps=` for the config-form input, beside the validated overrides the provider takes.
 	capabilities: Partial<CavellCapabilities> | undefined
 	threadId: string | undefined
@@ -49,7 +63,7 @@ const truthyFlag = (value: string | null): boolean => {
 }
 
 /** An unknown value is taken as a literal API origin, so any stack can be targeted ad hoc. */
-const resolveBaseUrl = (value: string): string => {
+export const resolveBaseUrl = (value: string): string => {
 	const known = BACKENDS.find((backend) => backend.key === value)
 
 	return known ? known.baseUrl : value.replace(/\/$/, '')
@@ -121,6 +135,11 @@ const parseDisplayModes = (raw: string): boolean | DisplayMode[] => {
 	return true
 }
 
+/** A positive integer, or undefined: the backend rejects anything else with a 400, but the demo
+ *  should not even ask — a garbled pin silently falls back to the default version. */
+const parseAgentVersion = (raw: string | null): number | undefined =>
+	raw && /^[1-9][0-9]*$/.test(raw) ? Number(raw) : undefined
+
 const readDemoParams = (search: string): DemoParams => {
 	const params = new URLSearchParams(search)
 	const base = params.get('base') ?? ''
@@ -128,18 +147,32 @@ const readDemoParams = (search: string): DemoParams => {
 	const context = params.get('context') ?? ''
 	const autoScroll = params.get('auto_scroll')
 	const agent = params.get('agent') || DEFAULT_AGENT_ID
-	const runUrl = params.get('run_url') || undefined
+	const explicitRunUrl = params.get('run_url') || undefined
+	const baseUrl = resolveBaseUrl(base)
+	const proxy = params.get('proxy') ?? ''
+	const proxyOrigin = resolveProxyOrigin(proxy)
+	const proxyAgent = params.get('proxy_agent') || defaultProxyAgentName(agent)
+	// A bare endpoint is the more specific ask; the proxy toggle only authors a runUrl of its own.
+	const runUrl = explicitRunUrl ?? (proxyOrigin ? proxyRunUrl(proxyOrigin, proxyAgent) : undefined)
 
 	return {
 		token: params.get('token') ?? '',
 		agent,
+		agentVersion: parseAgentVersion(params.get('agent_version')),
 		base,
-		baseUrl: resolveBaseUrl(base),
+		baseUrl,
 		runUrl,
+		explicitRunUrl,
+		proxy,
+		proxyOrigin,
+		proxyAgent,
 		caps,
 		// The agent's recommended baseline (cavell-docs/agents.md), with any explicit ?caps=
 		// override layered on top — the kit's own profile defaults fill the rest.
-		capabilities: { ...agentCapabilityDefaults(agent, Boolean(runUrl)), ...parseCapabilities(caps) },
+		capabilities: {
+			...agentCapabilityDefaults(agent, genericProfileTarget(runUrl, baseUrl)),
+			...parseCapabilities(caps),
+		},
 		threadId: params.get('thread') || undefined,
 		contextJson: context,
 		initialContext: parseContext(context),

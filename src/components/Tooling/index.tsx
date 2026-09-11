@@ -5,6 +5,7 @@ import { ToolCallbackEvent } from '@cavell/kit'
 import CapabilitiesTool from './components/CapabilitiesTool'
 import ConfigTool from './components/ConfigTool'
 import ConversationTool from './components/ConversationTool'
+import DictationTool from './components/DictationTool'
 import EventsTool from './components/EventsTool'
 import FrontendToolsTool from './components/FrontendToolsTool'
 import HistoryTool from './components/HistoryTool'
@@ -81,6 +82,7 @@ const Tooling = (props: Props) => {
 					recordingContext={recordingContext}
 					onRecordingContextChange={onRecordingContextChange}
 				/>
+				<DictationTool />
 				<HistoryTool />
 				<EventsTool
 					errorLog={errorLog}

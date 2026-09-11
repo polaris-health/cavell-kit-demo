@@ -1,14 +1,29 @@
 import { useState } from 'react'
 
-import { type CavellCapabilities, DISPLAY_MODES, type DisplayMode, resolveCapabilities } from '@cavell/kit'
+import {
+	type CavellCapabilities,
+	DISPLAY_MODES,
+	type DisplayMode,
+	genericProfileTarget,
+	resolveCapabilities,
+} from '@cavell/kit'
 
-import params from '../../../../params'
+import params, { resolveBaseUrl } from '../../../../params'
 import agentCapabilityDefaults from '../../../../params/agentCapabilityDefaults'
 import reloadWithParams from '../../../../params/reloadWithParams'
+import {
+	KNOWN_PROXY_AGENT_NAMES,
+	defaultProxyAgentName,
+	proxyPairingWarning,
+	proxyRunUrl,
+	resolveProxyOrigin,
+	suggestedProxyKey,
+} from '../../../../params/runProxy'
 import { CAPABILITY_KEYS, isCapabilityOverrides, isContextObject } from '../../../../params/typeguards'
 import CONTEXT_PRESETS from '../../../../utils/contextPresets'
 import createInitialContext from '../../../../utils/createInitialContext'
 import BackendSelect from '../../../BackendSelect'
+import ProxySelect from '../../../ProxySelect'
 import Section from '../shared/Section'
 
 /** The box shows the context the page actually booted with — the single-key params (?patient=,
@@ -55,8 +70,15 @@ const parseContextDraft = (draft: string): string | null => {
 const ConfigTool = () => {
 	const [backend, setBackend] = useState(params.base)
 	const [agent, setAgent] = useState(params.agent)
+	const [agentVersion, setAgentVersion] = useState(params.agentVersion ? String(params.agentVersion) : '')
 	const [locale, setLocale] = useState(params.locale ?? '')
-	const [runUrl, setRunUrl] = useState(params.runUrl ?? '')
+	const [runUrl, setRunUrl] = useState(params.explicitRunUrl ?? '')
+	// Direct vs via-proxy traffic (cavell-docs/proxy.md): the run through the CareConnect AI smart
+	// proxy, every side channel straight to the backend. An explicit run_url is the more specific
+	// ask, so a page that booted with one shows the toggle off even if ?proxy= was also present.
+	const [viaProxy, setViaProxy] = useState(Boolean(params.proxy) && !params.explicitRunUrl)
+	const [proxy, setProxy] = useState(params.proxy)
+	const [proxyAgent, setProxyAgent] = useState(params.proxy ? params.proxyAgent : '')
 	const [caps, setCaps] = useState(params.caps)
 	const [prompt, setPrompt] = useState(params.prompt ?? '')
 	const [autoScroll, setAutoScroll] = useState<string>(params.autoScroll ?? '')
@@ -91,12 +113,21 @@ const ConfigTool = () => {
 		)
 	}
 
-	// The capability checkboxes AUTHOR the ?caps= JSON (the free-text box stays the escape hatch —
-	// both edit the same draft). What they display is the EFFECTIVE capability set: the kit's
-	// profile defaults for the drafted target (Cavell profile vs a bare runUrl — same rule as
-	// CavellProvider), the drafted agent's recommended baseline layered on top (same table as
-	// cavell-docs/agents.md — see agentCapabilityDefaults), then the drafted overrides applied.
-	const genericProfile = Boolean(runUrl.trim())
+	// The proxy drafts: the env follows the drafted backend until picked explicitly (each proxy
+	// forwards to its own environment's backend), the registry name defaults per drafted agent.
+	const effectiveProxy = proxy || suggestedProxyKey(backend)
+	const proxyOrigin = resolveProxyOrigin(effectiveProxy) ?? ''
+	const effectiveProxyAgent = proxyAgent.trim() || defaultProxyAgentName(agent)
+	// The dropdown's rows: the registered names, the drafted agent's default and the URL-carried
+	// name if it is neither — a pick is never silently lost.
+	const proxyAgentOptions = [
+		...new Set([defaultProxyAgentName(agent), ...KNOWN_PROXY_AGENT_NAMES, effectiveProxyAgent]),
+	]
+	const proxiedRunUrl = proxyRunUrl(proxyOrigin, effectiveProxyAgent)
+	const draftedRunUrl = viaProxy ? proxiedRunUrl : runUrl.trim()
+	const proxyWarning = viaProxy ? proxyPairingWarning(effectiveProxy, backend) : ''
+
+	const genericProfile = genericProfileTarget(draftedRunUrl || undefined, resolveBaseUrl(backend))
 	const recommendedCaps = agentCapabilityDefaults(agent, genericProfile)
 	const capsDefaults = resolveCapabilities(recommendedCaps, genericProfile)
 	const effectiveCaps = resolveCapabilities({ ...recommendedCaps, ...(parseCapsDraft(caps) ?? {}) }, genericProfile)
@@ -132,8 +163,13 @@ const ConfigTool = () => {
 			...tokenReset,
 			base: backend,
 			agent,
+			agent_version: agentVersion.trim(),
 			locale,
-			run_url: runUrl,
+			// One run target or the other: the toggle authors ?proxy= and drops ?run_url=, a bare
+			// endpoint drops the proxy. The registry name only rides the URL when it deviates.
+			run_url: viaProxy ? '' : runUrl,
+			proxy: viaProxy ? effectiveProxy : '',
+			proxy_agent: viaProxy && effectiveProxyAgent !== defaultProxyAgentName(agent) ? effectiveProxyAgent : '',
 			caps,
 			prompt,
 			auto_scroll: autoScroll,
@@ -169,20 +205,72 @@ const ConfigTool = () => {
 						<option value="careconnect_gp" />
 						<option value="careconnect_nurse" />
 						<option value="careconnect_specialist" />
+						<option value="careconnect_physiotherapist" />
 					</datalist>
+				</label>
+				<label>
+					agentVersion{' '}
+					<input
+						value={agentVersion}
+						placeholder="latest stable"
+						inputMode="numeric"
+						onChange={(e) => setAgentVersion(e.target.value)}
+					/>
 				</label>
 				<label>
 					locale{' '}
 					<input value={locale} placeholder="backend-resolved" onChange={(e) => setLocale(e.target.value)} />
 				</label>
-				<label>
-					runUrl{' '}
-					<input
-						value={runUrl}
-						placeholder="/api/…/run (any AG-UI agent)"
-						onChange={(e) => setRunUrl(e.target.value)}
-					/>
+				{/* Direct kit → backend traffic, or the run via the CareConnect AI smart proxy with the
+				    side channels (history, feedback, transcription) still direct — cavell-docs/proxy.md. */}
+				<label className="kd-config-check">
+					<input type="checkbox" checked={viaProxy} onChange={(e) => setViaProxy(e.target.checked)} />
+					run via CareConnect proxy
 				</label>
+				{viaProxy ? (
+					<div className="kd-config-proxy">
+						<label>
+							proxy <ProxySelect value={effectiveProxy} onChange={setProxy} />
+						</label>
+						<label>
+							proxy agent{' '}
+							<select
+								value={effectiveProxyAgent}
+								aria-label="proxy agent name"
+								onChange={(e) => setProxyAgent(e.target.value)}
+							>
+								{proxyAgentOptions.map((name) => (
+									<option key={name} value={name}>
+										{name === defaultProxyAgentName(agent)
+											? `${name} (default for ${agent})`
+											: name}
+									</option>
+								))}
+							</select>
+						</label>
+						<p className="kd-config-note">
+							run → <code>{proxiedRunUrl}</code>
+							<br />
+							history, feedback, transcription → <code>{resolveBaseUrl(backend) || 'same origin'}</code>
+							<br />
+							agentVersion is not applied via the proxy (its registry row decides).
+						</p>
+						{proxyWarning ? (
+							<p className="kd-alert" role="alert">
+								proxy: {proxyWarning}
+							</p>
+						) : null}
+					</div>
+				) : (
+					<label>
+						runUrl{' '}
+						<input
+							value={runUrl}
+							placeholder="/api/…/run (any AG-UI agent)"
+							onChange={(e) => setRunUrl(e.target.value)}
+						/>
+					</label>
+				)}
 				{/* Effective per-capability toggles (STT = recording). Checked state = profile
 				    default + drafted overrides; a click writes an explicit override into ?caps=. */}
 				<div className="kd-config-modes">

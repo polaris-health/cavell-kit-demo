@@ -29,6 +29,12 @@ const PROBLEM = { problem: '10092206' }
 
 const SPECIALIST_CAREGIVER = { current_caregiver_speciality: 'diabetes specialist' }
 
+// The physiotherapist agent has no template choice, so the specialty label is display-only.
+const PHYSIOTHERAPIST_CAREGIVER = {
+	current_caregiver_name: 'Kinesitherapeut Demo',
+	current_caregiver_speciality: 'Kinesitherapeut',
+}
+
 const CONTEXT_PRESETS: ContextPreset[] = [
 	{
 		key: 'patient',
@@ -53,6 +59,12 @@ const CONTEXT_PRESETS: ContextPreset[] = [
 		label: 'specialist caregiver, no patient (nl)',
 		locale: 'nl',
 		context: { ...SPECIALIST_CAREGIVER },
+	},
+	{
+		key: 'physiotherapist-consult',
+		label: 'physiotherapist consult (nl)',
+		locale: 'nl',
+		context: { ...PATIENT, ...PHYSIOTHERAPIST_CAREGIVER },
 	},
 ]
 

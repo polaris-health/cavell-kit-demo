@@ -14,6 +14,33 @@ export const BACKENDS = [
 
 export type BackendKey = (typeof BACKENDS)[number]['key']
 
+/** The CareConnect AI smart proxy — Corilus' routing proxy in front of the AG-UI run (cavell-docs
+ *  proxy.md). It addresses agents by their name in Corilus' agent registry, whose row carries the
+ *  Cavell run URL, so `runUrl` becomes `{origin}/v1/agents/{registry name}/copilotkit` while
+ *  `baseUrl` keeps naming the Cavell backend for the side channels. Each proxy forwards to ITS
+ *  environment's backend (`backend` below) — there is no production proxy yet. */
+export const RUN_PROXIES = [
+	{
+		key: 'acc',
+		label: 'acc — ai-smart-proxy-acc.careconnect.be',
+		origin: 'https://ai-smart-proxy-acc.careconnect.be',
+		backend: 'staging',
+	},
+	{
+		key: 'qa',
+		label: 'qa — ai-smart-proxy-qa.careconnect.be',
+		origin: 'https://ai-smart-proxy-qa.careconnect.be',
+		backend: 'qa',
+	},
+] as const satisfies readonly { key: string; label: string; origin: string; backend: BackendKey }[]
+
+export type RunProxyKey = (typeof RUN_PROXIES)[number]['key']
+
+/** Like `?base=`, `?proxy=` is open — a value matching no key is a literal proxy origin. */
+export const isRunProxyKey = (value: unknown): value is RunProxyKey => {
+	return typeof value === 'string' && RUN_PROXIES.some((proxy) => proxy.key === value)
+}
+
 /** `?base=` is deliberately open — a value matching no key is a literal API origin, so this guard
  *  answers "is it a preset?", never "is it valid?". */
 export const isBackendKey = (value: unknown): value is BackendKey => {
@@ -45,6 +72,7 @@ export const CAPABILITY_KEYS = [
 	'starters',
 	'nativeHitl',
 	'recording',
+	'dictation',
 ] as const satisfies readonly (keyof CavellCapabilities)[]
 
 /** `?caps=` overrides are known boolean flags only. An unknown key or a non-boolean means the whole
