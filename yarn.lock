@@ -305,9 +305,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cavell/kit@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "@cavell/kit@npm:1.0.6::__archiveUrl=https%3A%2F%2Fstaging.cavell-kit.corilus.cavell.app%2Fbuilds%2F1.0.6%2Fcavell-kit-1.0.6.tgz"
+"@cavell/kit@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "@cavell/kit@npm:1.0.7::__archiveUrl=https%3A%2F%2Fstaging.cavell-kit.corilus.cavell.app%2Fbuilds%2F1.0.7%2Fcavell-kit-1.0.7.tgz"
   dependencies:
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.1.1"
@@ -324,7 +324,7 @@ __metadata:
     "@copilotkit/react-core": 1.65.0
     react: ^19
     react-dom: ^19
-  checksum: 10c0/59baf5026fab1bc1e2e9c3100ec5707e8b508327f73c8ac6733a417128aa7eb6800797874e55c28ba507d251274914afa252cc2c60ff5468cd9803087d037d5c
+  checksum: 10c0/a129277305239a2e97513332f38eb65b8cbc610ea7e6fac736d04c69b900819b5a3422597df7fa18e69bac25171abe3944dadf088d3f0f7c5d04895eb83851e0
   languageName: node
   linkType: hard
 
@@ -2266,7 +2266,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"baseline-browser-mapping@npm:^2.11.20":
+"baseline-browser-mapping@npm:^2.11.23":
   version: 2.11.23
   resolution: "baseline-browser-mapping@npm:2.11.23"
   bin:
@@ -2276,17 +2276,17 @@ __metadata:
   linkType: hard
 
 "browserslist@npm:^4.24.0":
-  version: 4.28.9
-  resolution: "browserslist@npm:4.28.9"
+  version: 4.29.0
+  resolution: "browserslist@npm:4.29.0"
   dependencies:
-    baseline-browser-mapping: "npm:^2.11.20"
+    baseline-browser-mapping: "npm:^2.11.23"
     caniuse-lite: "npm:^1.0.30001810"
-    electron-to-chromium: "npm:^1.5.420"
-    node-releases: "npm:^2.0.54"
-    update-browserslist-db: "npm:^1.3.2"
+    electron-to-chromium: "npm:^1.5.427"
+    node-releases: "npm:^2.0.55"
+    update-browserslist-db: "npm:^1.3.3"
   bin:
     browserslist: cli.js
-  checksum: 10c0/c4c7457cccb188bb904bb84566ff2d09e6f45ccf48619333111e5d60dfad456522a64e3e4af7c7608bc171371fc006f32bcc296877b0586bf80fb9f60841a110
+  checksum: 10c0/0490dad3a4b8e9b187fa1ba79fa84f5753dc148020c298026a6af2a3ad279a419d4507a7a42c0754dbae0ff343c2db3dfa4b9a5e9766b3d60029458dc17b66ae
   languageName: node
   linkType: hard
 
@@ -2313,7 +2313,7 @@ __metadata:
   dependencies:
     "@ag-ui/client": "npm:0.0.57"
     "@ag-ui/core": "npm:0.0.57"
-    "@cavell/kit": "npm:^1.0.6"
+    "@cavell/kit": "npm:^1.0.7"
     "@copilotkit/react-core": "npm:1.65.0"
     "@types/node": "npm:^24.12.2"
     "@types/react": "npm:^19"
@@ -2957,7 +2957,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-to-chromium@npm:^1.5.420":
+"electron-to-chromium@npm:^1.5.427":
   version: 1.5.428
   resolution: "electron-to-chromium@npm:1.5.428"
   checksum: 10c0/714cdc7bd2153a4ab90773d06fed65370c74dbd481502d6f9a61cd4c0c64630b57b6c3faccc3fb5578c7fedf6e82d296f18c8d0cf334c9f9b2746a7c7fabbdd6
@@ -4761,7 +4761,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-releases@npm:^2.0.54":
+"node-releases@npm:^2.0.55":
   version: 2.0.55
   resolution: "node-releases@npm:2.0.55"
   checksum: 10c0/35a779a188b3c1801820b77ea3c429d0aacac346368016a92c357dfd781f2908540fc3782b25d41647c3334dec83c976890f40d254bfd788eb5e72c3730146d1
@@ -5847,7 +5847,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"update-browserslist-db@npm:^1.3.2":
+"update-browserslist-db@npm:^1.3.3":
   version: 1.3.3
   resolution: "update-browserslist-db@npm:1.3.3"
   dependencies:
