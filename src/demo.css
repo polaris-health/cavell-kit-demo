@@ -411,6 +411,15 @@ body {
 	color: #4d6070;
 }
 
+/* The Recording section's FHIR-context editor: a stacked label, like the config panel's. */
+.kd-recording-context {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	color: #7d919e;
+	font-size: 12px;
+}
+
 .kd-panel input:focus-visible,
 .kd-panel textarea:focus-visible {
 	outline: 2px solid #2d6f68;
@@ -567,6 +576,27 @@ body {
 
 .kd-config-modes label {
 	padding-left: 12px;
+}
+
+/* The via-proxy sub-form: indented under its toggle, like the mode checkboxes. */
+.kd-config-proxy {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding-left: 12px;
+	border-left: 2px solid #1f2f3a;
+}
+
+.kd-config-note {
+	margin: 0;
+	color: #4d6070;
+	font-size: 10.5px;
+	line-height: 1.5;
+	word-break: break-all;
+}
+
+.kd-config-note code {
+	color: #7d919e;
 }
 
 /* ── Cards rendered by host hooks (HITL / interrupts / custom renderer) ──── */

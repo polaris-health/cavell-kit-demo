@@ -18,6 +18,7 @@ const HostContextTool = (props: Props) => {
 	const [patientIdDraft, setPatientIdDraft] = useState('')
 	const [patientNameDraft, setPatientNameDraft] = useState('')
 	const [patientInszDraft, setPatientInszDraft] = useState('')
+	const [patientGenderDraft, setPatientGenderDraft] = useState('')
 
 	const [problemDraft, setProblemDraft] = useState('')
 	const [problemTermDraft, setProblemTermDraft] = useState('')
@@ -31,19 +32,24 @@ const HostContextTool = (props: Props) => {
 	}
 
 	// The host-enriched patient declaration (MIGRATION.md contract): the id plus the display
-	// fields the badge renders until the server enriches at the next run.
-	const onSetPatient = (id: string, name: string, insz: string) => {
+	// fields the badge renders until the server enriches at the next run. Gender is a first-class
+	// context element — the specialist note template reads it from the conversation context.
+	const onSetPatient = (id: string, name: string, insz: string, gender: string) => {
 		const newContext = { ...hostContext }
 		delete newContext.patient_id
 		delete newContext.patient_resource_id
 		delete newContext.patient_name
 		delete newContext.patient_insz
+		delete newContext.patient_gender
 		Object.assign(newContext, parsePatientId(id))
 		if (name) {
 			newContext.patient_name = name
 		}
 		if (insz) {
 			newContext.patient_insz = insz
+		}
+		if (gender) {
+			newContext.patient_gender = gender
 		}
 		onContextChange(newContext)
 	}
@@ -53,6 +59,7 @@ const HostContextTool = (props: Props) => {
 		const newContext = { ...hostContext, patient_id: null, patient_resource_id: null } as Record<string, unknown>
 		delete newContext.patient_name
 		delete newContext.patient_insz
+		delete newContext.patient_gender
 		onContextChange(newContext)
 	}
 
@@ -131,11 +138,27 @@ const HostContextTool = (props: Props) => {
 					placeholder="INSZ (optional)"
 					onChange={(e) => setPatientInszDraft(e.target.value)}
 				/>
+				<select
+					aria-label="patient gender"
+					value={patientGenderDraft}
+					onChange={(e) => setPatientGenderDraft(e.target.value)}
+				>
+					<option value="">gender (optional)</option>
+					<option value="male">male</option>
+					<option value="female">female</option>
+					<option value="other">other</option>
+					<option value="unknown">unknown</option>
+				</select>
 				<button
 					className="kd-btn"
 					onClick={() => {
 						if (patientIdDraft.trim()) {
-							onSetPatient(patientIdDraft.trim(), patientNameDraft.trim(), patientInszDraft.trim())
+							onSetPatient(
+								patientIdDraft.trim(),
+								patientNameDraft.trim(),
+								patientInszDraft.trim(),
+								patientGenderDraft,
+							)
 						}
 					}}
 				>

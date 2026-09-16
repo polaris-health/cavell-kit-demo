@@ -13,6 +13,8 @@ const CapabilitiesTool = () => {
 				<Flag label="feedback" showActive={capabilities.feedback} />
 				<Flag label="starters" showActive={capabilities.starters} />
 				<Flag label="native HITL" showActive={capabilities.nativeHitl} />
+				<Flag label="recording" showActive={capabilities.recording} />
+				<Flag label="dictation" showActive={capabilities.dictation} />
 			</div>
 		</Section>
 	)
