@@ -5,6 +5,7 @@ import { ToolCallbackEvent } from '@cavell/kit'
 import CapabilitiesTool from './components/CapabilitiesTool'
 import ConfigTool from './components/ConfigTool'
 import ConversationTool from './components/ConversationTool'
+import CreditsTool from './components/CreditsTool'
 import DictationTool from './components/DictationTool'
 import EventsTool from './components/EventsTool'
 import FrontendToolsTool from './components/FrontendToolsTool'
@@ -26,6 +27,11 @@ interface Props {
 	onDifficultWordsChange: (words: string) => void
 	recordingContext: string
 	onRecordingContextChange: (context: string) => void
+	/** Timestamps of every `credits.onUpgrade` the host received — the kit fires the intent only. */
+	upgradeLog: string[]
+	/** The integrator-owned tier ladder, as editable JSON. */
+	creditPlans: string
+	onCreditPlansChange: (plans: string) => void
 	onContextChange: (context: Record<string, unknown>) => void
 }
 
@@ -40,6 +46,9 @@ const Tooling = (props: Props) => {
 		onDifficultWordsChange,
 		recordingContext,
 		onRecordingContextChange,
+		upgradeLog,
+		creditPlans,
+		onCreditPlansChange,
 		onContextChange,
 	} = props
 
@@ -83,6 +92,11 @@ const Tooling = (props: Props) => {
 					onRecordingContextChange={onRecordingContextChange}
 				/>
 				<DictationTool />
+				<CreditsTool
+					upgradeLog={upgradeLog}
+					creditPlans={creditPlans}
+					onCreditPlansChange={onCreditPlansChange}
+				/>
 				<HistoryTool />
 				<EventsTool
 					errorLog={errorLog}

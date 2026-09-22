@@ -73,6 +73,7 @@ export const CAPABILITY_KEYS = [
 	'nativeHitl',
 	'recording',
 	'dictation',
+	'credits',
 ] as const satisfies readonly (keyof CavellCapabilities)[]
 
 /** `?caps=` overrides are known boolean flags only. An unknown key or a non-boolean means the whole
