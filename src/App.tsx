@@ -36,6 +36,7 @@ import TokenForm from './components/TokenForm'
 import Tooling from './components/Tooling'
 import params from './params'
 import createInitialContext from './utils/createInitialContext'
+import parseCreditPlans, { DEFAULT_CREDIT_PLANS, DEFAULT_INCLUDED_CREDITS } from './utils/parseCreditPlans'
 import parseRecordingContext from './utils/parseRecordingContext'
 
 const App = () => {
@@ -46,6 +47,9 @@ const App = () => {
 	const [autoEvents, setAutoEvents] = useState<ToolCallbackEvent[]>([])
 	const [userEvents, setUserEvents] = useState<ToolCallbackEvent[]>([])
 	const [recordingLog, setRecordingLog] = useState<string[]>([])
+	const [upgradeLog, setUpgradeLog] = useState<string[]>([])
+	// The tiers are the INTEGRATOR's (ADR 0017 D4) — editable here so you can try other ladders.
+	const [creditPlans, setCreditPlans] = useState(JSON.stringify(DEFAULT_CREDIT_PLANS, null, 2))
 	const [difficultWords, setDifficultWords] = useState('')
 	const [recordingContext, setRecordingContext] = useState('[{ "resourceType": "Patient", "gender": "unknown" }]')
 
@@ -152,6 +156,17 @@ const App = () => {
 			onRecordingStateChange={(state) =>
 				setRecordingLog((log) => [...log, `${state.status}:${Math.round(state.durationMs / 1000)}s`])
 			}
+			// Credit usage dashboard (ADR 0017; the capability is ON by default). The balance comes
+			// from the backend, but the TIERS and what "Upgrade" does are the integrator's — prices
+			// are Corilus', not the kit's, so they are host configuration and never shipped. Edit
+			// them live in the harness panel's Credits section.
+			credits={{
+				includedCredits: DEFAULT_INCLUDED_CREDITS,
+				plans: parseCreditPlans(creditPlans),
+				currency: 'EUR',
+				termsUrl: 'https://ai.corilus.be/',
+				onUpgrade: () => setUpgradeLog((log) => [...log, new Date().toISOString()]),
+			}}
 		>
 			<div className="kd-app">
 				{/**
@@ -187,6 +202,9 @@ const App = () => {
 					onDifficultWordsChange={setDifficultWords}
 					recordingContext={recordingContext}
 					onRecordingContextChange={setRecordingContext}
+					upgradeLog={upgradeLog}
+					creditPlans={creditPlans}
+					onCreditPlansChange={setCreditPlans}
 					onContextChange={setContext}
 				/>
 			</div>

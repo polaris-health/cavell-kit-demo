@@ -20,9 +20,9 @@ export interface ContextPreset {
 }
 
 const PATIENT = {
-	patient_resource_id: '2b94a6aa-d181-4da4-9b14-74a1dee33327',
-	patient_name: 'Anthony Rathé',
-	patient_gender: 'male',
+	patient_resource_id: '0d8c8544-25b8-4bef-8e2d-6f3f0d61a43b',
+	patient_name: 'Gilette Poorter',
+	patient_gender: 'female',
 }
 
 const PROBLEM = { problem: '10092206' }
