@@ -31,12 +31,15 @@ const DEFAULT_STATE: CreditMockState = {
 	licensed: true,
 }
 
-/** The breakdown table needs rows. Rates are the shape of the real ones (a cheap search, a full
- *  note, a chat turn); `share` splits the consumed credits across them. */
+/** The breakdown table needs rows. `model` is the fixed `ConsumptionModel` slug the kit keys its
+ *  names/units/icons on; `use_case` is the invoice system's free-form label, deliberately worded
+ *  differently here so the demo shows the kit ignores it when it knows the model. The last row is
+ *  a model the kit has no copy for — it falls back to the `use_case` label. `share` splits the
+ *  consumed credits across the rows. */
 const SAMPLE_USE_CASES: (Omit<CreditUseCase, 'transactions' | 'credits'> & { share: number })[] = [
-	{ use_case: 'Evidence search', provider: 'Ask Aletta', model: null, rate: 0.25, share: 0.45 },
-	{ use_case: 'Consultation note', provider: 'OpenAI', model: 'gpt-transcribe', rate: 1, share: 0.4 },
-	{ use_case: 'Chat turn', provider: 'OpenAI', model: 'gpt-5.6-sol', rate: 0.1, share: 0.15 },
+	{ use_case: 'Guideline search', provider: 'cavell', model: 'clinical-guideline-search', rate: 0.25, share: 0.45 },
+	{ use_case: 'Consultation recording', provider: 'cavell', model: 'speech-to-text', rate: 1, share: 0.4 },
+	{ use_case: 'Future feature', provider: 'cavell', model: 'future-feature', rate: 0.1, share: 0.15 },
 ]
 
 /** What an unlimited tier's breakdown is scaled to — there is no allowance to subtract from. */

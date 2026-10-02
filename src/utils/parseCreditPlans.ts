@@ -1,11 +1,13 @@
 import type { CreditPlan } from '@cavell/kit'
 
-/** The tiers Corilus configures today: 50 credits included free, or unlimited for €33.63/mo.
- *  Prices belong to the integrator, never to the kit (ADR 0017 D4) — this is the demo playing
- *  that role, and the harness panel lets you edit it live. */
+/** Three tiers: 50 credits included free, a paid 200-credit middle tier, or unlimited for
+ *  €33.63/mo. The middle tier's numbers are demo placeholders, there to show a ladder longer than
+ *  Corilus's two rungs. Prices belong to the integrator, never to the kit (ADR 0017 D4) — this is
+ *  the demo playing that role, and the harness panel lets you edit it live. */
 export const DEFAULT_CREDIT_PLANS: CreditPlan[] = [
 	{ tier: 'TIER_1', credits: 50, price: 0 },
-	{ tier: 'TIER_2', credits: null, price: 33.63 },
+	{ tier: 'TIER_2', credits: 200, price: 12.5 },
+	{ tier: 'TIER_3', credits: null, price: 33.63 },
 ]
 
 /** Credits included free every month — the baseline the plans build on. */
