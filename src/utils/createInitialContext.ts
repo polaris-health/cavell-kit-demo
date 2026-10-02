@@ -7,9 +7,9 @@ import parsePatientId from './parsePatientId'
  * match (problem) both come from the INIT-time context, not from a later declaration.
  *
  * `?context=` is the whole context verbatim, for exercising exactly that; the single-key params
- * (`?patient=`/`?patient_name=`/`?problem=`/`?specialty=`) are shorthand for the keys the demo
- * declares most, and `?context=` replaces them wholesale rather than merging — one URL, one answer
- * to "what did the kit boot with".
+ * (`?patient=`/`?patient_name=`/`?patient_gender=`/`?problem=`/`?specialty=`) are shorthand for the
+ * keys the demo declares most, and `?context=` replaces them wholesale rather than merging — one
+ * URL, one answer to "what did the kit boot with".
  */
 const createInitialContext = (): Record<string, unknown> => {
 	if (params.initialContext) {
@@ -21,6 +21,9 @@ const createInitialContext = (): Record<string, unknown> => {
 		Object.assign(context, parsePatientId(params.patientId))
 		if (params.patientName) {
 			context.patient_name = params.patientName
+		}
+		if (params.patientGender) {
+			context.patient_gender = params.patientGender
 		}
 	}
 	if (params.problem) {

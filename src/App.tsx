@@ -11,7 +11,7 @@
  *
  * E2E contract: the suites carry no test-only hooks — they locate everything the way a user
  * does, so what must stay stable is USER-VISIBLE: the harness section titles ("Session",
- * "Capabilities", "Host context", "History", "Events"), button and input labels, the
+ * "Capabilities", "Host context", "Recording", "History", "Events"), button and input labels, the
  * `label: yes|no` state chips, and the tool-callback feed entry headers
  * (`name:status[:source]`). Renaming any of those is an E2E-affecting change; styling is free.
  *
@@ -36,6 +36,8 @@ import TokenForm from './components/TokenForm'
 import Tooling from './components/Tooling'
 import params from './params'
 import createInitialContext from './utils/createInitialContext'
+import parseCreditPlans, { DEFAULT_CREDIT_PLANS, DEFAULT_INCLUDED_CREDITS } from './utils/parseCreditPlans'
+import parseRecordingContext from './utils/parseRecordingContext'
 
 const App = () => {
 	const [context, setContext] = useState(createInitialContext())
@@ -44,6 +46,12 @@ const App = () => {
 	const [windowControlsLog, setWindowControlsLog] = useState<string[]>([])
 	const [autoEvents, setAutoEvents] = useState<ToolCallbackEvent[]>([])
 	const [userEvents, setUserEvents] = useState<ToolCallbackEvent[]>([])
+	const [recordingLog, setRecordingLog] = useState<string[]>([])
+	const [upgradeLog, setUpgradeLog] = useState<string[]>([])
+	// The tiers are the INTEGRATOR's (ADR 0017 D4) — editable here so you can try other ladders.
+	const [creditPlans, setCreditPlans] = useState(JSON.stringify(DEFAULT_CREDIT_PLANS, null, 2))
+	const [difficultWords, setDifficultWords] = useState('')
+	const [recordingContext, setRecordingContext] = useState('[{ "resourceType": "Patient", "gender": "unknown" }]')
 
 	if (!params.token) {
 		return <TokenForm />
@@ -116,15 +124,49 @@ const App = () => {
 			prompt={params.prompt}
 			locale={params.locale}
 			agentId={params.agent}
+			agentVersion={params.agentVersion}
+			// Direct: undefined, the kit builds the backend run URL. Via proxy (?proxy=) or a bare
+			// endpoint (?run_url=): the run alone goes there; every side channel keeps using baseUrl.
 			runUrl={params.runUrl}
 			baseUrl={params.baseUrl}
 			threadId={params.threadId}
+			// Capabilities are explicit harness configuration: `?caps=` (also authored by the
+			// config panel's capability toggles) is the only source of overrides, so the demo
+			// keeps the kit's own defaults — including recording OFF (ADR 0008): toggle it on
+			// to exercise the STT surface (careconnect_gp carries the note skill server-side).
 			capabilities={params.capabilities}
 			disablePreloading={params.disablePreloading}
 			headers={() => ({ Authorization: `Bearer ${params.token}` })} // `headers` is the kit's only auth channel; the thunk form is what token rotation uses.
 			toolCallbacks={toolCallbacks}
 			renderToolCalls={toolCallRenderers}
 			onError={(event) => setErrorLog((log) => [...log, String(event.code)])}
+			// Consultation recording (ADR 0008; effective with caps={"recording":true}). Both getters
+			// are fetched at every recording START. getContext is the RECOMMENDED channel: the FHIR
+			// Patient resource + a Medication resource per medication the patient is already using —
+			// the ASR derives its vocabulary from them (here the harness panel's "recording context"
+			// JSON). getDifficultWords supplements it with free-form words.
+			recording={{
+				getContext: () => parseRecordingContext(recordingContext),
+				getDifficultWords: () =>
+					difficultWords
+						.split(',')
+						.map((word) => word.trim())
+						.filter(Boolean),
+			}}
+			onRecordingStateChange={(state) =>
+				setRecordingLog((log) => [...log, `${state.status}:${Math.round(state.durationMs / 1000)}s`])
+			}
+			// Credit usage dashboard (ADR 0017; the capability is ON by default). The balance comes
+			// from the backend, but the TIERS and what "Upgrade" does are the integrator's — prices
+			// are Corilus', not the kit's, so they are host configuration and never shipped. Edit
+			// them live in the harness panel's Credits section.
+			credits={{
+				includedCredits: DEFAULT_INCLUDED_CREDITS,
+				plans: parseCreditPlans(creditPlans),
+				currency: 'EUR',
+				termsUrl: 'https://ai.corilus.be/',
+				onUpgrade: () => setUpgradeLog((log) => [...log, new Date().toISOString()]),
+			}}
 		>
 			<div className="kd-app">
 				{/**
@@ -155,6 +197,14 @@ const App = () => {
 					windowControlsLog={windowControlsLog}
 					autoEvents={autoEvents}
 					userEvents={userEvents}
+					recordingLog={recordingLog}
+					difficultWords={difficultWords}
+					onDifficultWordsChange={setDifficultWords}
+					recordingContext={recordingContext}
+					onRecordingContextChange={setRecordingContext}
+					upgradeLog={upgradeLog}
+					creditPlans={creditPlans}
+					onCreditPlansChange={setCreditPlans}
 					onContextChange={setContext}
 				/>
 			</div>

@@ -48,7 +48,10 @@ export default defineConfig({
 		port: 5176,
 		// Optional same-origin /api proxy for a locally running Cavell backend. Without it, use
 		// the in-app backend picker (?base=qa|staging|prd) — the deployed API origins allow
-		// cross-origin calls.
-		proxy: process.env.VITE_BACKEND ? { '/api': process.env.VITE_BACKEND } : undefined,
+		// cross-origin calls. `ws: true` is load-bearing: consultation recording streams over a
+		// websocket, and the string-shorthand proxy would not forward the upgrade.
+		proxy: process.env.VITE_BACKEND
+			? { '/api': { target: process.env.VITE_BACKEND, changeOrigin: true, ws: true } }
+			: undefined,
 	},
 })

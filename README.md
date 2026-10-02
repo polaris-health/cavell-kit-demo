@@ -42,6 +42,12 @@ http://localhost:5176/?token=<your token>&agent=careconnect_gp
 The token screen's **backend picker** (`?base=...`) selects which Cavell API origin to call;
 tokens are per environment.
 
+The config panel's **run via CareConnect proxy** toggle (`?proxy=qa|acc`) routes the AG-UI run
+through the CareConnect AI smart proxy while history, feedback and transcription keep going to the
+backend — the recommended setup of the kit docs' _Routing proxy for the AG-UI run_ page. The proxy
+addresses agents by their registry name (`careconnect_gp` is
+`cavell-gp`, `careconnect_specialist` is `cavell-specialist`; `?proxy_agent=` overrides). Pair the `qa` proxy with the qa backend and `acc` with staging.
+
 ## Peer assets: icons and font
 
 The kit renders icons as FontAwesome classes (`<i class="fa-light fa-…">`) and names Inter first
