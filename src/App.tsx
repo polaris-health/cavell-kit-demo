@@ -24,6 +24,8 @@ import { z } from 'zod'
 
 import {
 	CavellProvider,
+	GENERATE_NOTE_TOOL,
+	REVISE_NOTE_TOOL,
 	ReactToolCallRenderer,
 	type ToolCallback,
 	type ToolCallbackEvent,
@@ -34,6 +36,7 @@ import {
 import Companion from './components/Companion'
 import TokenForm from './components/TokenForm'
 import Tooling from './components/Tooling'
+import { navigateToRecord } from './mocks/navigateTo'
 import params from './params'
 import createInitialContext from './utils/createInitialContext'
 import parseCreditPlans, { DEFAULT_CREDIT_PLANS, DEFAULT_INCLUDED_CREDITS } from './utils/parseCreditPlans'
@@ -58,19 +61,22 @@ const App = () => {
 	}
 
 	// Auto fires on live completions only (replay must not re-fire — ADR 0006 D6);
-	// user renders a "Send to EHR" button on every completed ToolCallCard.
+	// user renders a "Send to EHR" button only on cards whose result is meant for the record —
+	// a read tool (get_sick_leaves, get_conditions, …) has nothing to send back.
+	const sendToEhr = (toolName: string): ToolCallback => ({
+		toolName,
+		trigger: 'user',
+		label: 'Send to EHR',
+		handler: (event) => setUserEvents((events) => [...events, event]),
+	})
 	const toolCallbacks: ToolCallback[] = [
 		{
 			toolName: '*',
 			trigger: 'auto',
 			handler: (event) => setAutoEvents((events) => [...events, event]),
 		},
-		{
-			toolName: '*',
-			trigger: 'user',
-			label: 'Send to EHR',
-			handler: (event) => setUserEvents((events) => [...events, event]),
-		},
+		sendToEhr(GENERATE_NOTE_TOOL),
+		sendToEhr(REVISE_NOTE_TOOL),
 		{
 			toolName: 'get_office_hours',
 			trigger: 'user',
@@ -167,6 +173,10 @@ const App = () => {
 				termsUrl: 'https://ai.corilus.be/',
 				onUpgrade: () => setUpgradeLog((log) => [...log, new Date().toISOString()]),
 			}}
+			// Record citations: setting this is what makes the agent cite the record item behind each fact,
+			// and the kit render each citation as a numbered link that calls it. A real host opens that
+			// place in its EHR; here the mock "opens" it in the harness panel (Frontend tools section).
+			onNavigateTo={navigateToRecord}
 		>
 			<div className="kd-app">
 				{/**
