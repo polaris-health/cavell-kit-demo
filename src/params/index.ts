@@ -53,6 +53,9 @@ interface DemoParams {
 	/** Straight to `windowControls.displayModes`: `true` = all three rows, an array picks and
 	 *  orders a subset, `false` drops the ⋮ button. */
 	displayModes: boolean | DisplayMode[]
+	/** `?mock_mcp=1` registers canned stand-ins for the GP's MCP-backed record reads, so their
+	 *  tool cards can be exercised without a reachable gateway. See useFrontendTools. */
+	mockMcp: boolean
 	nonce: string
 }
 
@@ -186,6 +189,7 @@ const readDemoParams = (search: string): DemoParams => {
 		disablePreloading: truthyFlag(params.get('disable_preloading')),
 		autoScroll: isAutoScrollMode(autoScroll) ? autoScroll : undefined,
 		displayModes: parseDisplayModes((params.get('display_modes') ?? '').toLowerCase()),
+		mockMcp: truthyFlag(params.get('mock_mcp')),
 		nonce: params.get('nonce') || DEFAULT_NONCE,
 	}
 }
