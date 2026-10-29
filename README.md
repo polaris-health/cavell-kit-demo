@@ -9,9 +9,10 @@ tool-call renderers, the conversation history list, feedback, and host context d
 
 ## License
 
-The example code in this repository is MIT-licensed. The `@cavell/kit` package it installs is
-**proprietary software of Polaris Health BV** — using it requires written permission (see the
-LICENSE inside the package). Contact Polaris Health to obtain access.
+This example application and the `@cavell/kit` package it installs are **proprietary software of
+Polaris Health BV**. Parties with written permission to use `@cavell/kit` may run this example and
+copy its code into their own integration; anything else requires written permission (see
+`LICENSE`, and the LICENSE inside the package). Contact Polaris Health to obtain access.
 
 ## Run it
 
