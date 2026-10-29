@@ -16,6 +16,7 @@ const CapabilitiesTool = () => {
 				<Flag label="recording" showActive={capabilities.recording} />
 				<Flag label="dictation" showActive={capabilities.dictation} />
 				<Flag label="credits" showActive={capabilities.credits} />
+				<Flag label="keep awake" showActive={capabilities.keepAwake} />
 			</div>
 		</Section>
 	)

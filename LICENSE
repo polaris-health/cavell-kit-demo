@@ -1,25 +1,43 @@
-MIT License
+Cavell Proprietary License
 
-Copyright (c) 2026 Polaris Health BV
+Copyright (c) 2026 Polaris Health BV ("Polaris Health"). All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This repository, the cavell-kit-demo example application, in source and
+compiled form, together with its documentation (the "Software"), is the
+proprietary and confidential property of Polaris Health BV (Belgium),
+distributed under the Cavell product name.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. NO RIGHTS GRANTED. No right or license — express, implied, by estoppel,
+   or otherwise — to use, copy, modify, merge, publish, distribute,
+   sublicense, or sell the Software, in whole or in part, is granted except
+   with the prior written permission of Polaris Health BV.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+2. PERMITTED USE. A party that holds prior written permission from
+   Polaris Health BV to use the @cavell/kit package may run the Software and
+   copy and adapt its code into its own integration of @cavell/kit, within
+   the scope, term, and conditions of that permission or of a signed
+   agreement between the party and Polaris Health BV. To request permission,
+   contact Polaris Health BV.
 
-Note: this license covers the example application code in this repository
-only. The @cavell/kit package it embeds is proprietary software of
-Polaris Health BV, licensed separately (see the LICENSE inside the package).
+3. NO REDISTRIBUTION. The Software may not be redistributed, re-published,
+   or made available to any third party other than as part of the permitted
+   integration under section 2, nor used to develop a competing product,
+   without the prior written permission of Polaris Health BV.
+
+4. THIRD-PARTY COMPONENTS AND HOST ASSETS. The Software depends on
+   third-party packages that are installed separately under those packages'
+   own licenses, and on the @cavell/kit package, which is licensed
+   separately (see the LICENSE inside that package). It requires certain
+   host-provided assets — including Font Awesome Pro and the Inter font —
+   that are NOT included in, distributed with, or licensed under this
+   Software. The user is solely responsible for holding valid licenses for
+   all such assets it loads.
+
+5. NO WARRANTY. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+   KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+   IN NO EVENT SHALL POLARIS HEALTH BV BE LIABLE FOR ANY CLAIM, DAMAGES, OR
+   OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE,
+   ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OF OR
+   OTHER DEALINGS IN THE SOFTWARE, EXCEPT WHERE SUCH LIABILITY CANNOT BE
+   EXCLUDED UNDER MANDATORY APPLICABLE LAW.
