@@ -5,10 +5,15 @@ import { useFrontendTool } from '@cavell/kit'
 import { NAVIGATION_TARGETS, navigateTo } from '../../mocks/navigateTo'
 import params from '../../params'
 import mockMcpRecords from './mockMcpRecords'
+import useCareConnectTools from './useCareConnectTools'
 
 const patientScoped = z.object({ patient_resource_id: z.string() })
 
 const useFrontendTools = () => {
+	// Mocks of the CareConnect GP desktop app's own tools (letters, eForms, absence certificates…).
+	// `?mock_careconnect=1`, and see the README.
+	useCareConnectTools()
+
 	useFrontendTool({
 		name: 'get_practice_protocol',
 		description:

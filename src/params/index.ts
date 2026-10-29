@@ -56,6 +56,10 @@ interface DemoParams {
 	/** `?mock_mcp=1` registers canned stand-ins for the GP's MCP-backed record reads, so their
 	 *  tool cards can be exercised without a reachable gateway. See useFrontendTools. */
 	mockMcp: boolean
+	/** `?mock_careconnect=1` registers mocks of the CareConnect GP desktop app's frontend tools
+	 *  (gatherLetterInfo, openSendLetterPopup, eForms, absence certificates…) with canned data, so
+	 *  the letter-generation flow can be exercised outside a CareConnect session. See useCareConnectTools. */
+	mockCareConnect: boolean
 	nonce: string
 }
 
@@ -190,6 +194,7 @@ const readDemoParams = (search: string): DemoParams => {
 		autoScroll: isAutoScrollMode(autoScroll) ? autoScroll : undefined,
 		displayModes: parseDisplayModes((params.get('display_modes') ?? '').toLowerCase()),
 		mockMcp: truthyFlag(params.get('mock_mcp')),
+		mockCareConnect: truthyFlag(params.get('mock_careconnect')),
 		nonce: params.get('nonce') || DEFAULT_NONCE,
 	}
 }

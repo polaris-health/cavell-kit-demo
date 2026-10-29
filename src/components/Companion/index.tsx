@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import z from 'zod'
 
-import { CavellAssistant, DISPLAY_MODES, DisplayMode, useHumanInTheLoop } from '@cavell/kit'
+import { Button, CavellAssistant, DISPLAY_MODES, DisplayMode, ToolCardShell, useHumanInTheLoop } from '@cavell/kit'
 
 import useFrontendTools from '../../hooks/useFrontendTools'
 import params from '../../params'
@@ -24,18 +24,18 @@ const Companion = (props: Props) => {
 		description: 'Escalate the question to a human supervisor for approval before answering.',
 		parameters: z.object({ reason: z.string().optional() }),
 		render: (props: { status: unknown; respond?: (result: unknown) => Promise<void> }) => (
-			<div className="kd-hitl-card">
-				{props.respond ? (
-					<button
-						className="kd-btn kd-btn-primary"
-						onClick={async () => await props.respond!({ approved: true })}
-					>
-						approve escalation
-					</button>
-				) : (
-					'escalation decided'
-				)}
-			</div>
+			<ToolCardShell
+				icon="user-shield"
+				title={props.respond ? 'Escalate to a supervisor?' : 'escalation decided'}
+				ariaLabel="escalation"
+				actions={
+					props.respond ? (
+						<Button onClick={async () => await props.respond!({ approved: true })}>
+							approve escalation
+						</Button>
+					) : null
+				}
+			/>
 		),
 	})
 
