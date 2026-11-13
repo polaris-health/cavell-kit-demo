@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 import { useFrontendTool } from '@cavell/kit'
 
-import { NAVIGATION_TARGETS, navigateTo } from '../../mocks/navigateTo'
+import { NAVIGATION_TARGETS, getCurrentView, navigateTo } from '../../mocks/navigateTo'
 import params from '../../params'
 import mockMcpRecords from './mockMcpRecords'
 import useCareConnectTools from './useCareConnectTools'
@@ -38,17 +38,28 @@ const useFrontendTools = () => {
 		name: 'navigateTo',
 		description:
 			"Opens a screen in the user's open patient record, and optionally selects one item on it. " +
-			'`target` must be one of the listed codes, exactly as written.',
+			'`view` must be one of the listed codes, exactly as written.',
 		// A plain string, not an enum, so an unknown code reaches the handler and gets the host's error.
-		// resourceType/resourceId/patientId mirror the item-level navigation proposed to Corilus (not live in CareConnect).
+		// The arguments are the record path convention proposed to Corilus (R0).
 		parameters: z.object({
-			target: z.string().describe(`One of: ${NAVIGATION_TARGETS.join(', ')}`),
+			view: z.string().describe(`One of: ${NAVIGATION_TARGETS.join(', ')}`),
 			resourceType: z.string().optional().describe('Resource type of that item, e.g. Observation'),
 			resourceId: z.string().optional().describe('Id of the record item to select on that screen'),
 			patientId: z.string().optional().describe("The open patient's resource id"),
 		}),
-		handler: async ({ target, resourceType, resourceId, patientId }) =>
-			navigateTo(target, resourceId, patientId, resourceType),
+		handler: async ({ view, resourceType, resourceId, patientId }) =>
+			navigateTo(view, resourceId, patientId, resourceType),
+	})
+
+	// What the user is looking at: the last path navigateTo accepted, as proposed to Corilus (R1).
+	// Before any navigation every field is null, as outside a patient record.
+	useFrontendTool({
+		name: 'getCurrentView',
+		description:
+			'Returns the screen the user has open in the patient record: patientId, view, and the ' +
+			'selected item (resourceType, resourceId). Fields are null when not applicable.',
+		parameters: z.object({}),
+		handler: async () => getCurrentView(),
 	})
 
 	// Canned stand-ins for the record reads careconnect_gp v3 serves over Corilus' MCP gateway, so
