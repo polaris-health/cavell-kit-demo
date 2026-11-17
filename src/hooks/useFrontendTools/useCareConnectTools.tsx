@@ -171,6 +171,53 @@ const LetterPreviewCard = (props: LetterPreviewProps) => {
 	)
 }
 
+interface NotePreviewProps {
+	args?: { content?: string; subject?: string; icd10Codes?: string }
+	status: unknown
+	result?: unknown
+}
+
+/** The patient note card: the letter body plus, for testing the ICD-10 path without a console, the codes
+ *  the agent sent and the leaflets the mock attached or rejected (read from the tool result). */
+const NotePreviewCard = (props: NotePreviewProps) => {
+	const { args, result } = props
+	const content = args?.content ?? ''
+	let attached: { icd10Code: string; title: string }[] = []
+	let rejected: { icd10Code: string; title: string | null; reason: string }[] = []
+	try {
+		const parsed: unknown = typeof result === 'string' ? JSON.parse(result) : result
+		if (parsed && typeof parsed === 'object') {
+			attached = (parsed as { attached?: typeof attached }).attached ?? []
+			rejected = (parsed as { rejected?: typeof rejected }).rejected ?? []
+		}
+	} catch {
+		// Not a JSON result (an error string): nothing to show beyond the body.
+	}
+
+	return (
+		<ToolCardShell
+			icon="file-lines"
+			title="Patient note opened in the editor"
+			headerEnd={<span className="kd-cc-badge">CareConnect mock</span>}
+			ariaLabel="patient note editor (mock)"
+		>
+			<div className="kd-cc-meta">Subject: {args?.subject || '(editor default)'}</div>
+			<div className="kd-cc-meta">ICD-10 codes sent: {args?.icd10Codes || '(none)'}</div>
+			<div className="kd-cc-meta">
+				Leaflets attached:{' '}
+				{attached.length > 0 ? attached.map((a) => `${a.title} (${a.icd10Code})`).join('; ') : '(none)'}
+			</div>
+			{rejected.length > 0 ? (
+				<div className="kd-cc-warn">
+					Rejected: {rejected.map((r) => `${r.icd10Code}: ${r.reason}`).join('; ')}
+				</div>
+			) : null}
+			{/* The HTML is our own agent's output rendered in a demo page, not third-party content. */}
+			<div className="kd-cc-letter" dangerouslySetInnerHTML={{ __html: content }} />
+		</ToolCardShell>
+	)
+}
+
 const useCareConnectTools = () => {
 	const available = params.mockCareConnect
 
@@ -276,14 +323,13 @@ const useCareConnectTools = () => {
 			'List the fields of the eForm currently open on screen: key, label, kind, required, writable, filled, ' +
 				'value, options. Call before fillEFormFields; keys are only valid until the next call.',
 			{},
-			'{"formTitle": "Aanvraag kinesitherapie", "frameCount": 2, "fieldCount": 4, "truncated": false, "fields": ' +
+			// Two fields, not the mock's four: the backend caps a client tool's description at
+			// 1024 characters (agui/hitl.MAX_CLIENT_TOOL_DESCRIPTION_CHARS).
+			'{"formTitle": "Aanvraag kinesitherapie", "frameCount": 2, "fieldCount": 2, "truncated": false, "fields": ' +
 				'[{"key": "0:patientName", "label": "Naam patiënt", "kind": "text", "required": true, "writable": false, ' +
-				'"filled": true, "value": null, "options": []}, {"key": "1:diagnosis", "label": "Diagnose", "kind": ' +
-				'"textarea", "required": true, "writable": true, "filled": false, "value": "", "options": []}, {"key": ' +
-				'"1:sessions", "label": "Aantal sessies", "kind": "select", "required": false, "writable": true, "filled": ' +
-				'false, "value": "", "options": ["|-- kies --", "9|9 sessies", "18|18 sessies"]}, {"key": "1:urgent", ' +
-				'"label": "Dringend", "kind": "checkbox", "required": false, "writable": true, "filled": false, "value": ' +
-				'"on", "options": []}]}, or {"status": "no_eform_open", "note": "Ask the doctor to open the eForm first."}',
+				'"filled": true, "value": null, "options": []}, {"key": "1:sessions", "label": "Aantal sessies", "kind": ' +
+				'"select", "required": false, "writable": true, "filled": false, "value": "", "options": ' +
+				'["|-- kies --", "9|9 sessies"]}]}, or {"status": "no_eform_open", "note": "Ask the doctor to open the eForm first."}',
 		),
 		parameters: z.object({}),
 		available,
@@ -354,6 +400,24 @@ const useCareConnectTools = () => {
 		available,
 		handler: async ({ recipientJson }) => mockCareConnect.openSendLetterPopup(orEmpty(recipientJson)),
 		render: (renderProps: LetterPreviewProps) => <LetterPreviewCard {...renderProps} />,
+	})
+
+	// Contract v1.4 (planned): the post-consultation patient note, Corilus "Use Case 4" / our UC2.
+	useFrontendTool({
+		name: 'preparePostConsultationNote',
+		description: withExamples(
+			'Open a letter to the open patient with the patient guideline leaflets for a list of ICD-10 codes ' +
+				'attached. content is the note body as HTML; subject is plain text; icd10Codes is a JSON array ' +
+				'string of ICD-10 codes (IBUI/ICPC2 find nothing). Calling it again updates the note it opened.',
+			{ content: '<p>Beste Jan,</p><p>...</p>', subject: 'Na uw consultatie', icd10Codes: '["J20.9"]' },
+			'{"status": "requested", "confirmed": false, "note": "...", "attached": [{"icd10Code": "J20.9", ' +
+				'"title": "Acute bronchitis"}], "rejected": [{"icd10Code": "R51", "title": null, "reason": "no_guideline"}]}',
+		),
+		parameters: z.object({ content: optionalString, subject: optionalString, icd10Codes: optionalString }),
+		available,
+		handler: async ({ content, subject, icd10Codes }) =>
+			mockCareConnect.preparePostConsultationNote(orEmpty(content), orEmpty(subject), orEmpty(icd10Codes)),
+		render: (renderProps: NotePreviewProps) => <NotePreviewCard {...renderProps} />,
 	})
 }
 

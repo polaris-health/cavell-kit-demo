@@ -502,6 +502,64 @@ export const openSendLetterPopup = (recipientJson: string): string => {
 const LEAFLETS: Record<string, { title: string; url: string }[]> = {
 	I10: [{ title: 'Hoge bloeddruk', url: 'https://example.org/leaflets/hoge-bloeddruk' }],
 	J20: [{ title: 'Acute bronchitis', url: 'https://example.org/leaflets/acute-bronchitis' }],
+	// Two codes on the ACC test patient Tom's problem list, so a real past consultation also attaches one.
+	J44: [{ title: 'COPD', url: 'https://example.org/leaflets/copd' }],
+	M54: [{ title: 'Lage rugpijn', url: 'https://example.org/leaflets/lage-rugpijn' }],
+}
+
+/* preparePostConsultationNote (contract v1.4, planned; Corilus "Use Case 4", our UC2): the letter to the
+ * open patient with the leaflets for a list of ICD-10 codes attached. `icd10Codes` is a JSON array string
+ * or a comma-separated list; a code without a leaflet or that is not ICD-10 lands in `rejected`. */
+export const preparePostConsultationNote = (content: string, subject: string, icd10Codes: string): string => {
+	let codes: string[]
+	try {
+		const parsed: unknown = JSON.parse(icd10Codes || '[]')
+		codes = Array.isArray(parsed) ? parsed.map(String) : []
+	} catch {
+		codes = icd10Codes.split(',')
+	}
+	const attached: { icd10Code: string; title: string }[] = []
+	const rejected: { icd10Code: string; title: string | null; reason: string }[] = []
+	const seen = new Set<string>()
+	for (const raw of codes) {
+		const code = raw.trim().toUpperCase()
+		if (!code) {
+			continue
+		}
+
+		if (!/^[A-Z][0-9]{2}(\.[0-9A-Z]{1,4})?$/.test(code)) {
+			rejected.push({ icd10Code: code, title: null, reason: 'not_icd10' })
+			continue
+		}
+		const leaflets = LEAFLETS[code] ?? LEAFLETS[code.split('.')[0]] ?? []
+		if (leaflets.length === 0) {
+			rejected.push({ icd10Code: code, title: null, reason: 'no_guideline' })
+			continue
+		}
+		for (const leaflet of leaflets) {
+			if (seen.has(leaflet.title)) {
+				continue
+			}
+
+			seen.add(leaflet.title)
+			attached.push({ icd10Code: code, title: leaflet.title })
+		}
+	}
+
+	// Dev aid: counts only — the codes and leaflet titles are patient diagnosis data; the card shows them.
+	console.info('[mock preparePostConsultationNote]', {
+		codes: codes.length,
+		attached: attached.length,
+		rejected: rejected.length,
+	})
+
+	return json({
+		status: 'requested',
+		confirmed: false,
+		note: `The patient note${subject ? ` "${subject}"` : ''} was requested for the open patient, ${content ? 'with the body' : 'with an empty body'} and ${attached.length} leaflet(s) attached. The doctor reviews and sends it; nothing is sent yet.`,
+		attached,
+		rejected,
+	})
 }
 
 export const getPatientGuidelines = (icd10Code: string): string => {
