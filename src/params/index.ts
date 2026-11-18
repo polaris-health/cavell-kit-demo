@@ -57,7 +57,7 @@ interface DemoParams {
 	 *  tool cards can be exercised without a reachable gateway. See useFrontendTools. */
 	mockMcp: boolean
 	/** `?mock_careconnect=1` registers mocks of the CareConnect GP desktop app's frontend tools
-	 *  (gatherLetterInfo, openSendLetterPopup, eForms, absence certificates…) with canned data, so
+	 *  (gatherLetterInfo, prepareLetter, eForms, absence certificates…) with canned data, so
 	 *  the letter-generation flow can be exercised outside a CareConnect session. See useCareConnectTools. */
 	mockCareConnect: boolean
 	nonce: string

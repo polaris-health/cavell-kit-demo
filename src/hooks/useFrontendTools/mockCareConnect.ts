@@ -201,7 +201,7 @@ const writableField = (
 	options,
 })
 
-/** Fresh copies per openEform — the fill tools mutate the open form in place. Keyed by real ACC eForm ids
+/** Fresh copies per prepareEForm — the fill tools mutate the open form in place. Keyed by real ACC eForm ids
  *  (what `list_letter_templates` returns); the fields are our stand-in, the real forms come from HealthConnect. */
 const EFORMS: Record<string, (() => MockEform) | undefined> = {
 	'PHYSIO-PRESCRIPTION': () => ({
@@ -286,7 +286,7 @@ export type AbsenceCertificateArgs = Partial<Record<string, string>>
 
 /** Validates what the contract's table says and reports it the contract's way: `rejected` per field,
  *  `validationBlockers` for the pregnancy date rule. */
-export const createPrefilledAbsenceCertificate = (args: AbsenceCertificateArgs): string => {
+export const prepareAbsenceCertificate = (args: AbsenceCertificateArgs): string => {
 	const rejected: string[] = []
 	const accepted: Record<string, string> = {}
 	const given = (name: string): string => (args[name] ?? '').trim()
@@ -357,7 +357,7 @@ export const createPrefilledAbsenceCertificate = (args: AbsenceCertificateArgs):
 	})
 }
 
-export const openEform = (eformName: string): string => {
+export const prepareEForm = (eformName: string): string => {
 	const factory = EFORMS[eformName.trim()]
 	// Unknown id: the real app opens the generic document picker and still answers "requested".
 	screen.eform = factory ? factory() : null
@@ -379,7 +379,7 @@ const snapshot = (form: MockEform) => ({
 
 const NO_EFORM = json({ status: 'no_eform_open', note: 'Ask the doctor to open the eForm first.' })
 
-export const discoverEFormFields = (): string => (screen.eform ? json(snapshot(screen.eform)) : NO_EFORM)
+export const readEFormFields = (): string => (screen.eform ? json(snapshot(screen.eform)) : NO_EFORM)
 
 interface FillEntry {
 	key?: unknown
@@ -453,7 +453,7 @@ export const fillEFormFields = (fieldsJson: string): string => {
 		}
 		const field = form.fields.find((candidate) => candidate.key === entry.key)
 		if (!field) {
-			skipped.push({ key: entry.key, reason: 'unknown field key — call discoverEFormFields again' })
+			skipped.push({ key: entry.key, reason: 'unknown field key — call readEFormFields again' })
 			continue
 		}
 		if (!field.writable) {
@@ -487,7 +487,7 @@ export const gatherLetterInfoResult = (receiver: MockReceiver | null, template: 
 
 export const GATHER_LETTER_INFO_CANCELLED = json({ status: 'cancelled' })
 
-export const openSendLetterPopup = (recipientJson: string): string => {
+export const prepareLetter = (recipientJson: string): string => {
 	const recipientsReadable = parseFillEntries(recipientJson) !== null
 
 	return requested(
