@@ -1,7 +1,7 @@
 /**
  * Registers the CareConnect GP Companion's frontend tools as mocks (`?mock_careconnect=1`) plus the two
  * cards that need UI: the `gatherLetterInfo` recipient/template picker (human-in-the-loop, like the real
- * one it waits for Continue/Cancel) and a preview of the HTML `openSendLetterPopup` received. See mockCareConnect.ts.
+ * one it waits for Continue/Cancel) and a preview of the HTML `prepareLetter` received. See mockCareConnect.ts.
  */
 import { useState } from 'react'
 
@@ -264,7 +264,7 @@ const useCareConnectTools = () => {
 	})
 
 	useFrontendTool({
-		name: 'createPrefilledAbsenceCertificate',
+		name: 'prepareAbsenceCertificate',
 		description: withExamples(
 			'Request the absence certificate screen, prefilled. All parameters optional; dates yyyy-MM-dd; ' +
 				'periodType FIRST/EXTENSION/RELAPSE; dayPart BEFORE_NOON/AFTERNOON/ENTIRE_DAY; reason ACCIDENT/ILLNESS/' +
@@ -301,11 +301,11 @@ const useCareConnectTools = () => {
 			inhibitions: optionalString,
 		}),
 		available,
-		handler: async (args) => mockCareConnect.createPrefilledAbsenceCertificate(args),
+		handler: async (args) => mockCareConnect.prepareAbsenceCertificate(args),
 	})
 
 	useFrontendTool({
-		name: 'openEform',
+		name: 'prepareEForm',
 		description: withExamples(
 			'Request a specific eForm to open. eformName is the exact id of an EFORM entry returned by ' +
 				'search_document_templates.',
@@ -314,11 +314,11 @@ const useCareConnectTools = () => {
 		),
 		parameters: z.object({ eformName: z.string() }),
 		available,
-		handler: async ({ eformName }) => mockCareConnect.openEform(eformName),
+		handler: async ({ eformName }) => mockCareConnect.prepareEForm(eformName),
 	})
 
 	useFrontendTool({
-		name: 'discoverEFormFields',
+		name: 'readEFormFields',
 		description: withExamples(
 			'List the fields of the eForm currently open on screen: key, label, kind, required, writable, filled, ' +
 				'value, options. Call before fillEFormFields; keys are only valid until the next call.',
@@ -333,7 +333,7 @@ const useCareConnectTools = () => {
 		),
 		parameters: z.object({}),
 		available,
-		handler: async () => mockCareConnect.discoverEFormFields(),
+		handler: async () => mockCareConnect.readEFormFields(),
 	})
 
 	useFrontendTool({
@@ -346,7 +346,7 @@ const useCareConnectTools = () => {
 				fields: '[{"key": "1:diagnosis", "value": "Lage rugpijn"}, {"key": "1:sessions", "value": "18"}, {"key": "1:urgent", "checked": true}]',
 			},
 			'{"filled": ["1:diagnosis", "1:sessions", "1:urgent"], "skipped": [{"key": "1:doesNotExist", "reason": ' +
-				'"unknown field key — call discoverEFormFields again"}], "after": {"formTitle": "...", "frameCount": 2, ' +
+				'"unknown field key — call readEFormFields again"}], "after": {"formTitle": "...", "frameCount": 2, ' +
 				'"fieldCount": 4, "truncated": false, "fields": []}, "limitReached": false}',
 		),
 		parameters: z.object({ fields: z.string() }),
@@ -372,7 +372,7 @@ const useCareConnectTools = () => {
 		description: withExamples(
 			'Open the recipient/template picker for a letter; the doctor picks there. Returns {status: "ready", ' +
 				'receivers: [...], template?: {id, title}} or {status: "cancelled"}. Pass receivers as a JSON array ' +
-				'string to openSendLetterPopup as recipientJson.',
+				'string to prepareLetter as recipientJson.',
 			{ recipientHint: 'Peeters', templateHint: 'Verwijsbrief cardiologie' },
 			'{"status": "ready", "receivers": [{"id": 4711, "firstName": "Jan", "lastName": "Peeters", ' +
 				'"institutionName": null, "resolvedSpeciality": "Cardiologie", "freeTextSpeciality": null, ' +
@@ -385,7 +385,7 @@ const useCareConnectTools = () => {
 	})
 
 	useFrontendTool({
-		name: 'openSendLetterPopup',
+		name: 'prepareLetter',
 		description: withExamples(
 			'Open the letter editor, prefilled, for the doctor to review and send. recipientJson is the receivers ' +
 				'array from gatherLetterInfo as a JSON string; content is the full letter body as HTML (build it from ' +
@@ -398,7 +398,7 @@ const useCareConnectTools = () => {
 		),
 		parameters: z.object({ recipientJson: optionalString, content: optionalString }),
 		available,
-		handler: async ({ recipientJson }) => mockCareConnect.openSendLetterPopup(orEmpty(recipientJson)),
+		handler: async ({ recipientJson }) => mockCareConnect.prepareLetter(orEmpty(recipientJson)),
 		render: (renderProps: LetterPreviewProps) => <LetterPreviewCard {...renderProps} />,
 	})
 
