@@ -497,8 +497,8 @@ export const prepareLetter = (recipientJson: string): string => {
 	)
 }
 
-/* getPatientGuidelines (feature-gated "Use Case 4: Post-consultation note"): links only, per the contract. The
- * URLs are placeholders — the demo ships publicly and must not pose as a real leaflet source. */
+/* The leaflets preparePostConsultationNote attaches, per ICD-10 code. The URLs are placeholders — the demo
+ * ships publicly and must not pose as a real leaflet source. */
 const LEAFLETS: Record<string, { title: string; url: string }[]> = {
 	I10: [{ title: 'Hoge bloeddruk', url: 'https://example.org/leaflets/hoge-bloeddruk' }],
 	J20: [{ title: 'Acute bronchitis', url: 'https://example.org/leaflets/acute-bronchitis' }],
@@ -507,7 +507,7 @@ const LEAFLETS: Record<string, { title: string; url: string }[]> = {
 	M54: [{ title: 'Lage rugpijn', url: 'https://example.org/leaflets/lage-rugpijn' }],
 }
 
-/* preparePostConsultationNote (contract v1.4, planned; Corilus "Use Case 4", our UC2): the letter to the
+/* preparePostConsultationNote (contract v1.4; Corilus "Use Case 4", our UC2): the letter to the
  * open patient with the leaflets for a list of ICD-10 codes attached. `icd10Codes` is a JSON array string
  * or a comma-separated list; a code without a leaflet or that is not ICD-10 lands in `rejected`. */
 export const preparePostConsultationNote = (content: string, subject: string, icd10Codes: string): string => {
@@ -560,15 +560,4 @@ export const preparePostConsultationNote = (content: string, subject: string, ic
 		attached,
 		rejected,
 	})
-}
-
-export const getPatientGuidelines = (icd10Code: string): string => {
-	const code = icd10Code.trim().toUpperCase()
-	if (!code) {
-		return json({ guidelines: [], note: 'No ICD10 code given.' })
-	}
-
-	const guidelines = LEAFLETS[code] ?? LEAFLETS[code.split('.')[0]] ?? []
-
-	return json({ guidelines, skippedWithoutUrl: 0 })
 }
