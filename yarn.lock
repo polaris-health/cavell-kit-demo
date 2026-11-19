@@ -305,9 +305,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cavell/kit@npm:^1.2.4":
-  version: 1.2.4
-  resolution: "@cavell/kit@npm:1.2.4::__archiveUrl=https%3A%2F%2Fqa.cavell-kit.corilus.cavell.app%2Fbuilds%2F1.2.4%2Fcavell-kit-1.2.4.tgz"
+"@cavell/kit@npm:^1.2.5":
+  version: 1.2.5
+  resolution: "@cavell/kit@npm:1.2.5::__archiveUrl=https%3A%2F%2Fqa.cavell-kit.corilus.cavell.app%2Fbuilds%2F1.2.5%2Fcavell-kit-1.2.5.tgz"
   dependencies:
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.1.1"
@@ -326,7 +326,7 @@ __metadata:
     "@copilotkit/react-core": 1.66.0
     react: ^19
     react-dom: ^19
-  checksum: 10c0/70bc8c58bbc08d381fec305e62ef46db82a51c9201119b6714a85d4c9767eb4826a02f3f3d22f5c085fa60c26e3342ad7ceec99feca024e58ef7ea1a9dfd5c49
+  checksum: 10c0/a945aba4166d97ce31fb62986d576a1670f71301f0ef147f031c30ac730b661ead77d2aa8bd7f87633473f5531eb540742c005d8f742d88d463ad6c9dbaa65b6
   languageName: node
   linkType: hard
 
@@ -2358,7 +2358,7 @@ __metadata:
   dependencies:
     "@ag-ui/client": "npm:0.0.57"
     "@ag-ui/core": "npm:0.0.57"
-    "@cavell/kit": "npm:^1.2.4"
+    "@cavell/kit": "npm:^1.2.5"
     "@copilotkit/react-core": "npm:1.66.0"
     "@types/node": "npm:^24.12.2"
     "@types/react": "npm:^19"
