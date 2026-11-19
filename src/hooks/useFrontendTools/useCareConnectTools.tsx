@@ -354,19 +354,6 @@ const useCareConnectTools = () => {
 		handler: async ({ fields }) => mockCareConnect.fillEFormFields(fields),
 	})
 
-	useFrontendTool({
-		name: 'getPatientGuidelines',
-		description: withExamples(
-			'Links to the patient guideline leaflets for an ICD10 diagnosis code, such as the icd10Code of a coded ' +
-				'evaluation line from getContactContext. Links only, never the leaflet content.',
-			{ icd10Code: 'J20.9', language: 'NL' },
-			'{"guidelines": [{"title": "Acute bronchitis", "url": "https://..."}], "skippedWithoutUrl": 0}',
-		),
-		parameters: z.object({ icd10Code: z.string(), language: optionalString }),
-		available,
-		handler: async ({ icd10Code }) => mockCareConnect.getPatientGuidelines(icd10Code),
-	})
-
 	useHumanInTheLoop({
 		name: 'gatherLetterInfo',
 		description: withExamples(
