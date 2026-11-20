@@ -62,6 +62,7 @@ export const buildBalanceResponse = (state: CreditMockState, now: Date = new Dat
 		tier: state.tier || null,
 		credits_remaining: state.creditsRemaining,
 		monthly_allotment: allotment,
+		unlimited: allotment === null,
 		cycle_resets_on: resets.toISOString().slice(0, 10),
 		use_cases: SAMPLE_USE_CASES.map(({ share, ...row }) => {
 			const credits = Math.round(consumed * share * 100) / 100
